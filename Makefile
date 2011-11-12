@@ -30,14 +30,6 @@ install::
 	ln -s $(pwd)/bin		~/
 	ln -s $(pwd)/emacs		~/
 	ln -s $(pwd)/emacs/emacs.el	~/.emacs
-	#
-	# SSH
-	#
-	if [ ! -d ~/.ssh ]; then		\
-		mkdir ~/.ssh;			\
-		chmod 700 ~/.ssh;		\
-	fi
-	install -m644 sshconfig ~/.ssh/config
 
 clean::
 	rm -f ~/.gitconfig
