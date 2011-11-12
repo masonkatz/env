@@ -1,0 +1,10 @@
+# -*- sh -*-
+#
+# ~/.bashrc-macosx - OSX SH shell config
+
+dircolors="dircolors"
+colorls="--color"
+ls="ls"
+
+alias emacs="emacs -nw"
+

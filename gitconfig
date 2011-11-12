@@ -1,0 +1,11 @@
+[user]
+	name = Mason J. Katz
+	email = mason.katz@gmail.com
+
+[color]
+	ui = true
+
+[alias]
+	graph = log --graph --pretty=format:'%Cred%h%Creset - %C(cyan)<%an>%Creset%C(yellow)%d%Creset %s %Cgreen(%cr)' --abbrev-commit --date=relative
+	push = "git push; git push --tags"
+

@@ -1,0 +1,21 @@
+#! /bin/sh
+
+OS='unknown'
+
+if [ -x /bin/uname ]; then
+	OS=`/bin/uname`
+elif [ -x /usr/bin/uname ]; then
+	OS=`/usr/bin/uname`
+fi
+
+case $OS in
+Linux)
+	echo linux
+        ;;
+Darwin)
+        echo macosx
+        ;;
+*)
+        echo unknown
+        ;;
+esac

@@ -1,0 +1,8 @@
+
+install:
+	if [ -d  ~/Library/Preferences/Aquamacs\ Emacs ]; then \
+		echo '(load-file "~/emacs/emacs.el")' > \
+			~/Library/Preferences/Aquamacs\ Emacs/Preferences.el; \
+	fi
+
+clean:
