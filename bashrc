@@ -38,7 +38,6 @@ function git_prompt() {
 			local color=$ansi_fyellow
 		else
 			local color=$ansi_fred
-			local extra=":`git diff |wc -l| tr -d ' '`"
 		fi
 		if [[ "$git_status" =~ On\ branch\ ([^[:space:]]+) ]]; then
 			branch=${BASH_REMATCH[1]}
@@ -46,7 +45,7 @@ function git_prompt() {
             	# Detached HEAD.  (branch=HEAD is a faster alternative.)
 			branch="(`git describe --all --contains --abbrev=4 HEAD 2> /dev/null || echo HEAD`)"
 		fi
-		echo -n "\[\e[$ansi_reset;$ansi_underscore;${color}m\]$branch$extra\[\e[${ansi_reset}m\] "
+		echo -n "\[\e[$ansi_reset;$ansi_underscore;${color}m\]$branch\[\e[${ansi_reset}m\] "
 	fi
 }
 
