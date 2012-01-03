@@ -1,0 +1,11 @@
+#! /usr/bin/python
+
+import time
+import calendar
+
+t = time.gmtime()
+year = t.tm_year
+month = t.tm_mon
+
+calendar.prmonth(year, month)
+

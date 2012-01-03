@@ -1,0 +1,44 @@
+#! /usr/bin/python
+
+import string
+import popen2
+import time
+
+r, w = popen2.popen2('ifconfig')
+nics = {}
+for line in r.readlines():
+        if line.find('flags') != -1:
+                device, flags = line.split(':')
+        if line.find('inet ') != -1:
+                tokens = line.split()
+                address = tokens[1]
+                nics[device] = {}
+                nics[device]['address'] = address
+
+r, w = popen2.popen2('netstat -bi')
+for line in r.readlines():
+        tokens = line.split()
+        if tokens[0] in nics.keys():
+                nics[tokens[0]]['in'] = int(tokens[6])
+                nics[tokens[0]]['out'] = int(tokens[9])
+
+time.sleep(1)
+
+r, w = popen2.popen2('netstat -bi')
+for line in r.readlines():
+        tokens = line.split()
+        if tokens[0] in nics.keys():
+                nics[tokens[0]]['rate in']  = int(tokens[6]) - nics[tokens[0]]['in']
+                nics[tokens[0]]['rate out'] = int(tokens[9]) - nics[tokens[0]]['out']
+
+keys = nics.keys()
+keys.sort()
+for nic in keys:
+	if nics[nic]['rate in'] == 0 and nics[nic]['rate out'] == 0:
+		continue
+        print '      IP     %14s' % nics[nic]['address']
+        print '%4s  Input  %9.2f Kb/s' % (nic, (float(nics[nic]['rate in']) / 1024))
+        print '      Output %9.2f Kb/s' % (float(nics[nic]['rate out']) / 1024)
+        print
+
+
