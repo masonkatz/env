@@ -57,6 +57,7 @@
 
 (add-hook 'python-mode-hook
 	  '(lambda ()
+	     (setq py-smart-indentation nil)
 	     (setq py-indent-offset 8)
 	     (setq python-indent 8)
 	     (mjk-code-mode)))
