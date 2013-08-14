@@ -30,6 +30,7 @@ install::
 	ln -s $(pwd)/bin		~/
 	ln -s $(pwd)/emacs		~/
 	ln -s $(pwd)/emacs/emacs.el	~/.emacs
+	ln -s $(pwd)/screenrc		~/.screenrc
 
 clean::
 	rm -f ~/.gitconfig
@@ -44,5 +45,6 @@ clean::
 	rm -f ~/bin
 	rm -f ~/emacs
 	rm -f ~/.emacs
+	rm -f ~/.screenrc
 
 
