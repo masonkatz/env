@@ -2,9 +2,15 @@
 #
 # ~/.bashrc-macosx - OSX SH shell config
 
+function rescreen {
+	rm $HOME/.ssh-auth-sock
+	ln -sf $SSH_AUTH_SOCK $HOME/.ssh-auth-sock
+	env SSH_AUTH_SOCK=$HOME/.ssh-auth-sock screen -R
+	rm $HOME/.ssh-auth-sock
+}
+
 dircolors="dircolors"
 colorls="--color"
 ls="ls"
 
 alias emacs="emacs -nw"
-
