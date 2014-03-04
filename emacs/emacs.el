@@ -36,6 +36,11 @@
   (column-marker-1 80))
 
 
+(add-hook 'js-mode-hook
+	  '(lambda ()
+	     (setq js-indent-level 8)
+	     (mjk-code-mode)))
+
 (add-hook 'c-mode-hook
 	  '(lambda ()
 	     (setq c-basic-offset 8)
@@ -60,6 +65,7 @@
 	     (setq py-smart-indentation nil)
 	     (setq py-indent-offset 8)
 	     (setq python-indent 8)
+	     (setq tab-width 8)
 	     (mjk-code-mode)))
 
 (add-hook 'sh-mode-hook
@@ -70,9 +76,9 @@
 		   sh-indent-for-case-alt '+)
 	     (mjk-code-mode)))
 
-(add-hook 'html-mode-hook
+(add-hook 'html-helper-mode-hook
 	  '(lambda ()
-	     (setq html-helper-basic-offset 2)
+	     (setq html-helper-basic-offset 8)
 	     (mjk-code-mode)))
 
 (add-hook 'sgml-mode-hook

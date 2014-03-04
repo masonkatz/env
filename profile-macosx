@@ -2,3 +2,7 @@
 #
 # ~/.profile - OSX SH shell config
 
+for PROFILE_SCRIPT in $( ls /etc/profile.d/*.sh ); do
+	. $PROFILE_SCRIPT
+done
+
