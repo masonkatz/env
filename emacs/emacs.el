@@ -8,6 +8,10 @@
        '(lambda ()
 	  (require 'zenburn))))
 
+;; mac keyboard
+(global-set-key "\M-[h" (lambda () (interactive) (beginning-of-line 'nil)))
+(global-set-key "\M-[f" (lambda () (interactive) (end-of-line 'nil)))
+
 (require 'uniquify) 
 (require 'org)
 (require 'hideshow-org)
