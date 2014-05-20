@@ -7,7 +7,7 @@ import time
 r, w = popen2.popen2('ifconfig')
 nics = {}
 for line in r.readlines():
-        if line.find('flags') != -1:
+        if line.find('flags=') != -1:
                 device, flags = line.split(':')
         if line.find('inet ') != -1:
                 tokens = line.split()
