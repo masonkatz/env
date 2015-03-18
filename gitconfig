@@ -1,6 +1,6 @@
 [user]
 	name = Mason J. Katz
-	email = mason.katz@gmail.com
+	email = mason.katz@StackIQ.com
 
 [color]
 	ui = true
@@ -9,3 +9,7 @@
 	graph = log --graph --pretty=format:'%Cred%h%Creset - %C(cyan)<%an>%Creset%C(yellow)%d%Creset %s %Cgreen(%cr)' --abbrev-commit --date=relative
 	push = "git push; git push --tags"
 
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
