@@ -20,3 +20,21 @@ source ~/.bashrc
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
 # Finished adapting your PATH environment variable for use with MacPorts.
 
+
+##
+# Your previous /Users/mjk/.profile file was backed up as /Users/mjk/.profile.macports-saved_2016-02-22_at_15:32:04
+##
+
+# MacPorts Installer addition on 2016-02-22_at_15:32:04: adding an appropriate PATH variable for use with MacPorts.
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+# Finished adapting your PATH environment variable for use with MacPorts.
+
+
+##
+# Your previous /Users/mjk/.profile file was backed up as /Users/mjk/.profile.macports-saved_2016-10-21_at_15:57:16
+##
+
+# MacPorts Installer addition on 2016-10-21_at_15:57:16: adding an appropriate PATH variable for use with MacPorts.
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+# Finished adapting your PATH environment variable for use with MacPorts.
+

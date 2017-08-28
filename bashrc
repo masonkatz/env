@@ -52,6 +52,7 @@ function git_prompt() {
 function prompt_command() {
 	local pwd_length=32
 	local DIR=`pwd`
+	local os=`$HOME/bin/os`
 
 	echo $DIR | grep "^$HOME" >> /dev/null
 	if [ $? -eq 0 ]; then
@@ -72,7 +73,7 @@ function prompt_command() {
 	if [ $EMACS ]; then
 		PS1="\W \$ "
 	else
-		PS1="\[\e]0;\u@\h\a\]\[\e[${ansi_fwhite}m\]\h `git_prompt`\[\e[${ansi_fcyan}m\]$newPWD \[\e[${ansi_fmagenta}m\]\\$\[\e[${ansi_reset}m\] "
+		PS1="\[\e]0;\u@\h\a\]\[\e[${ansi_fwhite}m\]\[\e[${ansi_fcyan}m\]$os \[\e[${ansi_fwhite}m\]\h `git_prompt`\[\e[${ansi_fcyan}m\]$newPWD \[\e[${ansi_fmagenta}m\]\\$\[\e[${ansi_reset}m\] "
 	fi
 }
 
@@ -103,3 +104,4 @@ if [ -x ~/bin/os ]; then
 fi
 
 export EDITOR="emacs -nw"
+
