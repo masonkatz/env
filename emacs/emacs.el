@@ -8,10 +8,12 @@
     (progn
       (tool-bar-mode 0))
   (progn
-    (load-theme `zenburn t)))
+    (menu-bar-mode -99)
+    (load-theme 'zenburn t)))
 
 
-;; melpa
+;; Configure MELPA and automatically install any missing packages.
+
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
@@ -22,6 +24,11 @@
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
 
+(mapc
+ (lambda (package)
+   (or (package-installed-p package)
+       (package-install package)))
+ '(magit))
 
 
 ;; mac keyboard
@@ -34,7 +41,6 @@
 (setq global-font-lock-mode 1)
 (server-start)
 (display-time-mode 1)
-(menu-bar-mode -99)
 (column-number-mode)
 
 (setq uniquify-buffer-name-style 'post-forward
@@ -46,20 +52,17 @@
 
 
 (defun global-code-mode ()
-  "Common settings for all programming modes.
-
-- turn on line numbers
-"
   (interactive)
   (if (display-graphic-p)
       (progn
 	(linum-mode 1)))
+  (show-paren-mode)
   (column-marker-1 80))
 
 
 (add-hook 'js-mode-hook
 	  '(lambda ()
-	     (setq js-indent-level 8)
+	     (setq js-indent-level 8)   
 	     (global-code-mode)))
 
 (add-hook 'c-mode-hook
@@ -102,23 +105,5 @@
 	     (setq html-helper-basic-offset 8)
 	     (global-code-mode)))
 
-(add-hook 'sgml-mode-hook
-	  '(lambda ()
-	     (setq sgml-basic-offset 8)
-	     (global-code-mode)))
 
 
-
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (magit))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
