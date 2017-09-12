@@ -25,11 +25,20 @@ install::
 	ln -s $(pwd)/profile-macosx	~/.profile-macosx
 	ln -s $(pwd)/dircolors		~/.dircolors
 	#
+	# EMACS
+	#
+	ln -s $(pwd)/emacs		~/
+	ln -s ~/emacs/emacs.el		~/.emacs
+	(										\
+		if [ ! -d ~/emacs/python-mode ]; then					\
+			cd ~/emacs;							\
+			git clone https://gitlab.com/python-mode-devs/python-mode.git;	\
+		fi;									\
+	)
+	#
 	# Other
 	#
 	ln -s $(pwd)/bin		~/
-	ln -s $(pwd)/emacs		~/
-	ln -s $(pwd)/emacs/emacs.el	~/.emacs
 	ln -s $(pwd)/screenrc		~/.screenrc
 
 clean::
