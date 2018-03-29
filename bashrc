@@ -50,7 +50,7 @@ function git_prompt() {
 }
 
 function prompt_command() {
-	local pwd_length=32
+	local pwd_length=16
 	local DIR=`pwd`
 	local os=`$HOME/bin/os`
 
@@ -60,21 +60,24 @@ function prompt_command() {
 		newPWD="~$CURRDIR"
 
 		if [ $(echo -n $newPWD | wc -c | tr -d " ") -gt $pwd_length ]; then
-			newPWD="~/..$(echo -n $PWD | sed -e "s/.*\(.\{$pwd_length\}\)/\1/")"
+			newPWD="~/...$(echo -n $PWD | sed -e "s/.*\(.\{$pwd_length\}\)/\1/")"
 		fi
 	elif [ "$DIR" = "$HOME" ]; then
 		newPWD="~"
 	elif [ $(echo -n $PWD | wc -c | tr -d " ") -gt $pwd_length ]; then
-		newPWD="..$(echo -n $PWD | sed -e "s/.*\(.\{$pwd_length\}\)/\1/")"
+		newPWD="...$(echo -n $PWD | sed -e "s/.*\(.\{$pwd_length\}\)/\1/")"
 	else
 		newPWD="$(echo -n $PWD)"
 	fi
 
-	if [ $EMACS ]; then
-		PS1="\W \$ "
-	else
-		PS1="\[\e]0;\u@\h\a\]\[\e[${ansi_fwhite}m\]\[\e[${ansi_fcyan}m\]$os \[\e[${ansi_fwhite}m\]\h `git_prompt`\[\e[${ansi_fcyan}m\]$newPWD \[\e[${ansi_fmagenta}m\]\\$\[\e[${ansi_reset}m\] "
-	fi
+	case $TERM in
+	eterm-color)
+		PS1="\[\e[${ansi_reset}m\]`git_prompt`\[\e[${ansi_fcyan}m\]$newPWD \[\e[${ansi_fmagenta}m\]\\$\[\e[${ansi_reset}m\] "
+		;;
+	*)
+		PS1="\[\e[${ansi_reset}m\]\[\e[${ansi_fcyan}m\]$os \[\e[${ansi_fwhite}m\]\u@\h `git_prompt`\[\e[${ansi_fcyan}m\]$newPWD \[\e[${ansi_fmagenta}m\]\\$\[\e[${ansi_reset}m\] "
+		;;
+	esac
 }
 
 PROMPT_COMMAND=prompt_command
@@ -85,7 +88,7 @@ export CVS_RSH
 
 
 case $TERM in
-xterm*)
+xterm*|eterm-color)
 	alias ls='$ls -F $colorls'
 	alias la='$ls -Fa $colorls'
         ;;
