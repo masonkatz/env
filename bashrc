@@ -31,7 +31,7 @@ ansi_bwhite=47
 
 function git_prompt() {
 	local git_status="`git status -unormal 2>&1`"
-	if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then
+	if ! [[ "$git_status" =~ ot\ a\ git\ repo ]]; then
 		if [[ "$git_status" =~ nothing\ to\ commit ]]; then
 			local color=$ansi_fgreen
 		elif [[ "$git_status" =~ nothing\ added\ to\ commit\ but\ untracked\ files\ present ]]; then
@@ -106,5 +106,7 @@ if [ -x ~/bin/os ]; then
 	fi
 fi
 
-export EDITOR="emacs -nw"
+export VISUAL=emacsclient
+export EDITOR=emacsclient
+export ALTERNATE_EDITOR="emacs -nw"
 

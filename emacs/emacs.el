@@ -10,11 +10,13 @@
 
 (if (display-graphic-p)
     (progn
-      (tool-bar-mode 0))
+      (tool-bar-mode 0)
+      (set-face-attribute 'default nil :height 160)
+      (load-theme 'zenburn t))
   (progn
     (menu-bar-mode -99)
     (load-theme 'zenburn t)))
-
+(setq inhibit-startup-screen t)
 
 ;; For emacs-version >= 24.4 configue the package system and and the
 ;; desired packages.
@@ -32,7 +34,7 @@
      (lambda (package)
        (or (package-installed-p package)
 	   (package-install package)))
-     '(magit))))
+     '(markdown-mode))))
 
 ;; nicer windows
 (defun my-change-window-divider ()
@@ -126,6 +128,4 @@
 	  '(lambda ()
 	     (setq html-helper-basic-offset 8)
 	     (global-code-mode)))
-
-
 
