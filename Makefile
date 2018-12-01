@@ -33,6 +33,7 @@ install::
 		if [ ! -d ~/emacs/python-mode ]; then					\
 			cd ~/emacs;							\
 			git clone https://gitlab.com/python-mode-devs/python-mode.git;	\
+			git clone https://github.com/dominikh/go-mode.el;		\
 		fi;									\
 	)
 	#
