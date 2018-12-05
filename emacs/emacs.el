@@ -128,7 +128,7 @@
 	     (setq py-indent-tabs-mode t)
 	     (setq py-indent-offset 8)
 	     (setq py-indent-paren-spanned-multilines-p nil)
-	     (py-closing-list-dedents-bos t)
+	     (setq py-closing-list-dedents-bos nil)
 	     (global-code-mode)))
 
 (add-hook 'nxml-mode-hook
@@ -148,3 +148,4 @@
 	     (setq html-helper-basic-offset 8)
 	     (global-code-mode)))
 
+(put 'downcase-region 'disabled nil)

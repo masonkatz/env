@@ -14,3 +14,5 @@ colorls="--color"
 ls="ls"
 
 alias emacs="emacs -nw"
+
+export TZ=US/Pacific
