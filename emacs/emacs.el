@@ -4,6 +4,13 @@
 
 (add-to-list 'load-path "~/emacs")
 
+
+
+(add-to-list 'load-path "~/emacs/go-mode.el")
+(require 'go-mode)
+;(autoload 'go-mode "go-mode" nil t)
+;(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+
 (add-to-list 'load-path "~/emacs/python-mode")
 (setq py-install-directory "~/emacs/python-mode")
 (require 'python-mode)
@@ -34,7 +41,7 @@
 ;     (lambda (package)
 ;       (or (package-installed-p package)
 ;	   (package-install package)))
-;     '(markdown-mode))))
+;     '(markdown-mode go-mode))))
 
 ;; nicer windows
 (defun my-change-window-divider ()
@@ -145,6 +152,12 @@
   (column-marker-2 80))
 
 
+(add-hook 'go-mode-hook
+	  '(lambda ()
+	     (setq tab-width 4)
+	     (setq gofmt-command "goimports")
+	     (add-hook 'before-save-hook 'gofmt-before-save)))
+	     
 (add-hook 'js-mode-hook
 	  '(lambda ()
 	     (setq js-indent-level 8)   

@@ -82,6 +82,9 @@ function prompt_command() {
 
 PROMPT_COMMAND=prompt_command
 
+if [ -d ~/go/bin ]; then
+	PATH=$PATH:~/go/bin
+fi
 
 CVS_RSH=ssh
 export CVS_RSH
