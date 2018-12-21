@@ -75,7 +75,7 @@ function prompt_command() {
 		PS1="\[\e[${ansi_reset}m\]`git_prompt`\[\e[${ansi_fcyan}m\]$newPWD \[\e[${ansi_fmagenta}m\]\\$\[\e[${ansi_reset}m\] "
 		;;
 	*)
-		PS1="\[\e[${ansi_reset}m\]\[\e[${ansi_fcyan}m\]$os \[\e[${ansi_fwhite}m\]\u@\h `git_prompt`\[\e[${ansi_fcyan}m\]$newPWD \[\e[${ansi_fmagenta}m\]\\$\[\e[${ansi_reset}m\] "
+		PS1="\[\e[${ansi_reset}m\]\[\e[${ansi_fcyan}m\]$os \[\e[${ansi_fwhite}m\]$PS_INFO`git_prompt`\[\e[${ansi_fcyan}m\]$newPWD \[\e[${ansi_fmagenta}m\]\\$\[\e[${ansi_reset}m\] "
 		;;
 	esac
 }

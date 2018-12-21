@@ -2,22 +2,13 @@
 #
 # ~/.bashrc-macosx - OSX SH shell config
 
-if [ -d /opt/local/bin ]; then
-	PATH=$PATH:/opt/local/bin
+if [ -d /usr/local/bin ]; then
+	PATH=$PATH:/usr/local/bin
+fi
+if [ -d /usr/local/sbin ]; then
+	PATH=$PATH:/usr/local/sbin
 fi
 
-
-if [ -r /sw/bin/init.sh ]; then	# Fink
-	source /sw/bin/init.sh
-fi
-
-if [ -d /opt/local/bin ]; then	# Mac Ports
-	PATH=/opt/local/bin:$PATH
-fi
-
-if [ -d /opt/local/sbin ]; then	# Mac Ports
-	PATH=$PATH:/opt/local/sbin
-fi
 
 if which -s gdircolors; then
 	dircolors="gdircolors"

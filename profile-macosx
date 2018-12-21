@@ -2,9 +2,5 @@
 #
 # ~/.profile - OSX SH shell config
 
-if [ -d /etc/profile.d ]; then
-	for PROFILE_SCRIPT in $( ls /etc/profile.d/*.sh ); do
-		. $PROFILE_SCRIPT
-	done
-fi
+PS_INFO=
 
