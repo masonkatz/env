@@ -3,17 +3,29 @@
 (add-to-list 'custom-theme-load-path "~/emacs/themes/")
 
 (add-to-list 'load-path "~/emacs")
-
-
-
 (add-to-list 'load-path "~/emacs/go-mode.el")
+(add-to-list 'load-path "~/emacs/python-mode")
+(add-to-list 'load-path "~/emacs/yaml-mode")
+(add-to-list 'load-path "~/emacs/tramp-term.el")
+(add-to-list 'load-path "~/emacs/dockerfile-mode")
+
+
+(require 'uniquify) 
+(require 'column-marker)
 (require 'go-mode)
-;(autoload 'go-mode "go-mode" nil t)
+(require 'python-mode)
+(require 'yaml-mode)
+(require 'tramp-term)
+(require 'dockerfile-mode)
+
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 ;(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
-(add-to-list 'load-path "~/emacs/python-mode")
+
+;(autoload 'go-mode "go-mode" nil t)
+
 (setq py-install-directory "~/emacs/python-mode")
-(require 'python-mode)
 
 (if (display-graphic-p)
     (progn
@@ -59,14 +71,13 @@
         (ansi-term (getenv "SHELL")))
     (switch-to-buffer "*ansi-term*")))
 
+
 (global-set-key [f1] 'visit-term-buffer)
 (global-set-key "\M-[h" (lambda () (interactive) (beginning-of-line 'nil)))
 (global-set-key "\M-[f" (lambda () (interactive) (end-of-line 'nil)))
 
 
 
-(require 'uniquify) 
-(require 'column-marker)
 
 (setq global-font-lock-mode 1)
 (setq display-time-mail-string "")

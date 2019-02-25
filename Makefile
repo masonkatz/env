@@ -30,13 +30,22 @@ install::
 	ln -s $(pwd)/emacs		~/
 	ln -s ~/emacs/emacs.el		~/.emacs
 	(										\
-		if [ ! -d ~/emacs/python-mode ]; then					\
-			cd ~/emacs;							\
+		cd ~/emacs;								\
+		if [ ! -d python-mode ]; then						\
 			git clone https://gitlab.com/python-mode-devs/python-mode.git;	\
 		fi;									\
-		if [ ! -d ~/emacs/go-mode.el ]; then					\
+		if [ ! -d go-mode.el ]; then						\
 			git clone https://github.com/dominikh/go-mode.el;		\
 		fi;									\
+		if [ ! -d dockerfile-mode ]; then					\
+			git clone git@github.com:masonkatz/dockerfile-mode.git;		\
+		fi;									\
+		if [ ! -d yaml-mode ]; then						\
+			git clone https://github.com/yoshiki/yaml-mode.git;		\
+		fi;									\
+		if [ ! -d tramp-term.el ]; then						\
+			git clone https://github.com/randymorris/tramp-term.el.git;	\
+		fi									\
 	)
 	#
 	# Other
