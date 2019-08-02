@@ -45,6 +45,9 @@ install::
 		fi;									\
 		if [ ! -d tramp-term.el ]; then						\
 			git clone https://github.com/randymorris/tramp-term.el.git;	\
+		fi;									\
+		if [ ! -d web-mode ]; then						\
+			git clone https://github.com/fxbois/web-mode;			\
 		fi									\
 	)
 	#

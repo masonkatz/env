@@ -1,4 +1,13 @@
 ;;; emacs.el - main emacs config file shared across all OSes
+;; ____________________________________________________________________________
+;; Aquamacs custom-file warning:
+;; Warning: After loading this .emacs file, Aquamacs will also load
+;; customizations from `custom-file' (customizations.el). Any settings there
+;; will override those made here.
+;; Consider moving your startup settings to the Preferences.el file, which
+;; is loaded after `custom-file':
+;; ~/Library/Preferences/Aquamacs Emacs/Preferences
+;; _____________________________________________________________________________
 
 (add-to-list 'custom-theme-load-path "~/emacs/themes/")
 
@@ -8,6 +17,7 @@
 (add-to-list 'load-path "~/emacs/yaml-mode")
 (add-to-list 'load-path "~/emacs/tramp-term.el")
 (add-to-list 'load-path "~/emacs/dockerfile-mode")
+(add-to-list 'load-path "~/emacs/web-mode")
 
 
 (require 'uniquify) 
@@ -17,13 +27,18 @@
 (require 'yaml-mode)
 (require 'tramp-term)
 (require 'dockerfile-mode)
+(require 'web-mode)
 
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
+
 ;(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
 
 ;(autoload 'go-mode "go-mode" nil t)
+
+(setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
 
 (setq py-install-directory "~/emacs/python-mode")
 
@@ -152,6 +167,11 @@
 		   sh-indentation  8
 		   sh-indent-for-case-label 0
 		   sh-indent-for-case-alt '+)
+	     (global-code-mode)))
+
+(add-hook 'web-mode-hook
+	  '(lambda ()
+	     (web-mode-use-tabs)
 	     (global-code-mode)))
 
 (add-hook 'html-helper-mode-hook
