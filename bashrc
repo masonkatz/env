@@ -92,12 +92,12 @@ export CVS_RSH
 
 case $TERM in
 xterm*|eterm-color)
-	alias ls='$ls -F $colorls'
-	alias la='$ls -Fa $colorls'
+	alias ls='ls -F --color'
+	alias la='ls -Fa --color'
         ;;
 *)
-	alias ls='$ls -F'
-	alias la='$ls -Fa'
+	alias ls='ls -F'
+	alias la='ls -Fa'
 	;;
 esac
 
