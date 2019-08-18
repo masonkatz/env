@@ -1,13 +1,5 @@
 ;;; emacs.el - main emacs config file shared across all OSes
-;; ____________________________________________________________________________
-;; Aquamacs custom-file warning:
-;; Warning: After loading this .emacs file, Aquamacs will also load
-;; customizations from `custom-file' (customizations.el). Any settings there
-;; will override those made here.
-;; Consider moving your startup settings to the Preferences.el file, which
-;; is loaded after `custom-file':
-;; ~/Library/Preferences/Aquamacs Emacs/Preferences
-;; _____________________________________________________________________________
+
 
 (add-to-list 'custom-theme-load-path "~/emacs/themes/")
 
@@ -18,6 +10,7 @@
 (add-to-list 'load-path "~/emacs/tramp-term.el")
 (add-to-list 'load-path "~/emacs/dockerfile-mode")
 (add-to-list 'load-path "~/emacs/web-mode")
+(add-to-list 'load-path "~/emacs/prettier-emacs")
 
 
 (require 'uniquify) 
@@ -28,6 +21,7 @@
 (require 'tramp-term)
 (require 'dockerfile-mode)
 (require 'web-mode)
+(require 'prettier-js)
 
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
@@ -113,8 +107,8 @@
   (if (display-graphic-p)
       (progn
 	(linum-mode 1)))
-  (show-paren-mode)
-  (column-marker-2 80))
+  (show-paren-mode))
+
 
 
 (add-hook 'go-mode-hook
@@ -171,8 +165,14 @@
 
 (add-hook 'web-mode-hook
 	  '(lambda ()
-	     (web-mode-use-tabs)
+	     (if (equal web-mode-content-type "javascript")
+		 (web-mode-set-content-type "jsx")) ;; react
+	     (setq web-mode-markup-indent-offset 2
+		   web-mode-css-indent-offset 2
+		   web-mode-code-indent-offset 2)
+	     (prettier-js-mode)
 	     (global-code-mode)))
+
 
 (add-hook 'html-helper-mode-hook
 	  '(lambda ()

@@ -48,6 +48,9 @@ install::
 		fi;									\
 		if [ ! -d web-mode ]; then						\
 			git clone https://github.com/fxbois/web-mode;			\
+		fi;									\
+		if [ ! -d prettier-emacs ]; then					\
+			git clone https://github.com/prettier/prettier-emacs.git;	\
 		fi									\
 	)
 	#
