@@ -7,9 +7,6 @@ pwd=$(shell echo $(PWD) | sed 's/$(home)//g')
 default:
 	@echo Running on $(OS)
 
-install clean::
-	$(MAKE) -f Makefile-$(OS) $@
-
 install::
 	#
 	# Git
@@ -24,6 +21,14 @@ install::
 	ln -s $(pwd)/profile		~/.profile
 	ln -s $(pwd)/profile-macosx	~/.profile-macosx
 	ln -s $(pwd)/dircolors		~/.dircolors
+	#
+	# ZSH config
+	#
+	if [ ! -d $HOME/.oh-my-zsh ]; then sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; fi
+	ln -s $(pwd)/zshrc		~/.zshrc
+	ln -s $(pwd)/zshrc-macosx	~/.zshrc-macosx
+	ln -s $(pwd)/zprofile		~/.zprofile
+	ln -s $(pwd)/zprofile-macosx	~/.zprofile-macosx
 	#
 	# EMACS
 	#
@@ -69,6 +74,12 @@ clean::
 	rm -f ~/.profile-linux
 	rm -f ~/.bash_profile
 	rm -f ~/.dircolors
+	rm -f ~/.zshrc
+	rm -f ~/.zshrc-macosx
+	rm -f ~/.zshrc-linux
+	rm -f ~/.zprofile
+	rm -f ~/.zprofile-macosx
+	rm -f ~/.zprofile-linux
 	rm -f ~/bin
 	rm -f ~/emacs
 	rm -f ~/.emacs

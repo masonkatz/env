@@ -36,14 +36,16 @@
 
 (setq py-install-directory "~/emacs/python-mode")
 
+(defun graphic-setup ()
+  (tool-bar-mode 0)
+  (set-face-attribute 'default nil :height 180))
+
 (if (display-graphic-p)
-    (progn
-      (tool-bar-mode 0)
-      (set-face-attribute 'default nil :height 160)
-      (load-theme 'zenburn t))
+    (graphic-setup)
   (progn
-    (menu-bar-mode -99)
-    (load-theme 'zenburn t)))
+    (menu-bar-mode -99)))
+
+(load-theme 'zenburn t)
 (setq inhibit-startup-screen t)
 
 ;; For emacs-version >= 24.4 configue the package system and and the
@@ -63,14 +65,6 @@
 ;       (or (package-installed-p package)
 ;	   (package-install package)))
 ;     '(markdown-mode go-mode))))
-
-;; nicer windows
-(defun my-change-window-divider ()
-  (let ((display-table (or buffer-display-table standard-display-table)))
-    (set-display-table-slot display-table 5 ?│)
-    (set-window-display-table (selected-window) display-table)))
-
-;;(add-hook 'window-configuration-change-hook 'my-change-window-divider)
 
 (defun visit-term-buffer ()
   "Create or visit a terminal buffer."
@@ -110,7 +104,8 @@
   (show-paren-mode))
 
 
-
+(add-hook 'before-make-frame-hook 'graphic-setup)
+	     
 (add-hook 'go-mode-hook
 	  '(lambda ()
 	     (setq tab-width 4)
