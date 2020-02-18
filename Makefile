@@ -24,7 +24,7 @@ install::
 	#
 	# ZSH config
 	#
-	if [ ! -d $HOME/.oh-my-zsh ]; then sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; fi
+	if [ ! -d $$HOME/.oh-my-zsh ]; then sh -c "$$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; fi
 	ln -s $(pwd)/zshrc		~/.zshrc
 	ln -s $(pwd)/zshrc-macosx	~/.zshrc-macosx
 	ln -s $(pwd)/zprofile		~/.zprofile
