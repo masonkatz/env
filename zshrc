@@ -44,6 +44,7 @@ if [ -d ~/go/bin ]; then
 	PATH=$PATH:~/go/bin
 fi
 
+DEFAULT_USER=`whoami`
 
 source $ZSH/oh-my-zsh.sh
 
@@ -55,7 +56,6 @@ xterm*)
 	alias la='ls -Fa --color'
         ;;
 eterm-color)
-	ZSH_THEME="robbyrussell"
 	DISABLE_AUTO_TITLE="true"
 	alias ls='ls -F --color'
 	alias la='ls -Fa --color'
