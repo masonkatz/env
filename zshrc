@@ -2,7 +2,7 @@
 #
 # ~/.zshrc - portable ZSH shell config
 
-export ZSH="/Users/mjk/.oh-my-zsh"
+export ZSH=~/.oh-my-zsh
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
