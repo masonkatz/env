@@ -9,3 +9,5 @@ if [ -x ~/bin/os ]; then
 	fi
 fi
 
+export GOPATH=~/go
+

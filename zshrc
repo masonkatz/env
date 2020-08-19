@@ -28,7 +28,7 @@ ZSH_THEME="agnoster"
 # much, much faster.
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-plugins=(emacs)
+#plugins=(emacs)
 
 
 if [ -x ~/bin/os ]; then
