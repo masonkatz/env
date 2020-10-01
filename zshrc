@@ -27,7 +27,7 @@ CASE_SENSITIVE="true"
 # much, much faster.
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-#plugins=(emacs)
+plugins=(kubectl)
 
 
 if [ -x ~/bin/os ]; then
