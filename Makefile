@@ -29,6 +29,11 @@ install::
 	ln -s $(pwd)/zshrc-macosx	~/.zshrc-macosx
 	ln -s $(pwd)/zprofile		~/.zprofile
 	ln -s $(pwd)/zprofile-macosx	~/.zprofile-macosx
+	ln -s $(pwd)/p10k.zsh		~/.p10k.zsh
+	if [ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k ]; then \
+		git clone https://github.com/romkatv/powerlevel10k.git \
+			${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k \
+	fi
 	#
 	# EMACS
 	#
@@ -80,6 +85,7 @@ clean::
 	rm -f ~/.zprofile
 	rm -f ~/.zprofile-macosx
 	rm -f ~/.zprofile-linux
+	rm -f ~/.p10k.zsh
 	rm -f ~/bin
 	rm -f ~/emacs
 	rm -f ~/.emacs
