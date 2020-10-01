@@ -30,9 +30,9 @@ install::
 	ln -s $(pwd)/zprofile		~/.zprofile
 	ln -s $(pwd)/zprofile-macosx	~/.zprofile-macosx
 	ln -s $(pwd)/p10k.zsh		~/.p10k.zsh
-	if [ ! -d ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k ]; then \
-		git clone https://github.com/romkatv/powerlevel10k.git \
-			${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k \
+	if [ ! -d ~/.oh-my-zsh/custom/themes/powerlevel10k ]; then			\
+		git clone https://github.com/romkatv/powerlevel10k.git			\
+			~/.oh-my-zsh/custom/themes/powerlevel10k;			\
 	fi
 	#
 	# EMACS
