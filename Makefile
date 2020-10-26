@@ -149,11 +149,18 @@ emacs/prettier-emacs:
 ##
 
 install: install-git install-zsh install-bash install-emacs ## install entire environment
-	ln -s $(pwd)/dircolors		~/.dircolors
-	ln -s $(pwd)/bin		~/
-	ln -s $(pwd)/screenrc		~/.screenrc
+ifeq ($(OS),macosx)
+	[ -d ~/.ssh ] || mkdir -m700 .ssh
+	ln -s $(pwd)/ssh-config	~/.ssh/config
+endif
+	ln -s $(pwd)/dircolors	~/.dircolors
+	ln -s $(pwd)/bin	~/
+	ln -s $(pwd)/screenrc	~/.screenrc
 
 clean: clean-git clean-bash clean-zsh clean-emacs ## removes local config (do this first)
+ifeq ($(OS),macosx)
+	rm -f ~/.ssh/config
+endif
 	rm -f ~/.dircolors
 	rm -f ~/bin
 	rm -f ~/.screenrc
