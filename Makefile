@@ -7,7 +7,7 @@ pwd=$(shell echo $(PWD) | sed 's/$(home)//g')
 default:
 	@echo Running on $(OS)
 
-install::
+install: zsh-install.sh
 	#
 	# Git
 	#
@@ -24,7 +24,7 @@ install::
 	#
 	# ZSH config
 	#
-	if [ ! -d $$HOME/.oh-my-zsh ]; then sh -c "$$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; fi
+	sh ./zsh-install.sh --unattended; rm -f ~/.zshrc
 	ln -s $(pwd)/zshrc		~/.zshrc
 	ln -s $(pwd)/zshrc-macosx	~/.zshrc-macosx
 	ln -s $(pwd)/zshrc-linux	~/.zshrc-linux
@@ -70,6 +70,11 @@ install::
 	ln -s $(pwd)/bin		~/
 	ln -s $(pwd)/screenrc		~/.screenrc
 
+
+zsh-install.sh:
+	[ -d $@ ] || mkdir -p $(dir $@)
+	curl -o $@ -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+
 clean::
 	rm -f ~/.gitconfig
 	rm -f ~/.bashrc
@@ -91,5 +96,6 @@ clean::
 	rm -f ~/emacs
 	rm -f ~/.emacs
 	rm -f ~/.screenrc
+	rm -rf ~/.oh-my-zsh zsh-install.sh
 
 
