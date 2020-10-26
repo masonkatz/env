@@ -4,4 +4,7 @@ if [ -d /opt/stack/bin ]; then
 	PATH=/opt/stack/bin:$PATH
 fi
 
+eval `dircolors -b "${HOME}/.dircolors"`
+
+
 
