@@ -9,5 +9,7 @@ if [ -x ~/bin/os ]; then
 	fi
 fi
 
+[[ -d ~/go/bin ]] || mkdir -p ~/go/bin
+
 export GOPATH=~/go
 

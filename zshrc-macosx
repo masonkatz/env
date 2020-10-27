@@ -16,4 +16,6 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 eval `dircolors -b "${HOME}/.dircolors"`
 
+eval $(thefuck --alias)
+
 
