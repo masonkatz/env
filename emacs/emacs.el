@@ -16,19 +16,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
-;(package-refresh-contents)
-(mapc (lambda (package)
-	(or (package-installed-p package)
-	    (package-install package)))
-      '(company-lsp
-	dockerfile-mode
-	go-mode
-	markdown-mode
-	prettier-js
-	python-mode
-	tramp-term
-	web-mode
-	yaml-mode))
 
 (require 'column-marker)
 (require 'company-lsp)
@@ -198,7 +185,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (company-lsp lsp-docker lsp-mode go-mode))))
+ '(package-selected-packages
+   (quote
+    (yaml-mode web-mode tramp-term python-mode prettier-js markdown-mode dockerfile-mode company-lsp lsp-docker lsp-mode go-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
