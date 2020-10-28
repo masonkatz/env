@@ -14,6 +14,8 @@ CASE_SENSITIVE="true"
 
 plugins=(git git-flow golang docker docker-compose jsontools kubectl)
 
+source ~/.zshrc-site
+[[ ! -f ~/.zshrc-$SITE ]] || source ~/.zshrc-$SITE
 
 if [ -x ~/bin/os ]; then
 	os=`~/bin/os`
@@ -48,4 +50,9 @@ alias ll='ls -l'
 unalias lsa
 
 alias m='make'
+
+export VISUAL=emacsclient
+export EDITOR=emacsclient
+export ALTERNATE_EDITOR='emacs -nw'
+alias e='emacsclient'
 

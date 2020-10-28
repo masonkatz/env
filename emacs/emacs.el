@@ -29,6 +29,13 @@
 (require 'web-mode)
 (require 'yaml-mode)
 
+
+(defvar softiron (if (getenv "SOFTIRON")
+		     't
+		   nil)
+  "SoftIron coding conventions")
+
+
 (push 'company-lsp company-backends)
 
 
@@ -43,7 +50,7 @@
 
 (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
 
-(setq py-install-directory "~/emacs/python-mode")
+;(setq py-install-directory "~/emacs/python-mode")
 
 (defun graphic-setup ()
   (tool-bar-mode 0)
@@ -57,18 +64,6 @@
 (load-theme 'zenburn t)
 (setq inhibit-startup-screen t)
 
-;; For emacs-version >= 24.4 configue the package system and and the
-;; desired packages.
-
-;(if (and (= emacs-major-version 24)(< emacs-minor-version 4))
-;    ()
-;  (progn
-;    (require 'package)
-;    (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-;			(not (gnutls-available-p))))
-;	   (url (concat (if no-ssl "http" "https") "://melpa.org/packages/")))
-;      (add-to-list 'package-archives (cons "melpa" url) t))
-;    (package-initialize)
 
 (defun visit-term-buffer ()
   "Create or visit a terminal buffer."
@@ -108,14 +103,17 @@
   (show-paren-mode))
 
 
+
 (add-hook 'before-make-frame-hook 'graphic-setup)
-	     
+
 (add-hook 'go-mode-hook #'lsp)
 (add-hook 'go-mode-hook
 	  '(lambda ()
-	     (setq tab-width 4)
-	     (setq gofmt-command "goimports")
-	     (add-hook 'before-save-hook 'gofmt-before-save)))
+	     (if softiron
+		 (setq tab-width 4
+		       indent-tabs-mode nil)
+	       (progn (setq gofmt-command "goimports")
+		      (add-hook 'before-save-hook 'gofmt-before-save)))))
 	     
 (add-hook 'js-mode-hook
 	  '(lambda ()

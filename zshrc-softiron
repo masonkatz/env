@@ -1,0 +1,8 @@
+#!/bin/zsh
+#
+# SoftIron Specific
+
+export SOFTIRON=1
+
+
+

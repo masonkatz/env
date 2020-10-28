@@ -1,13 +1,13 @@
 OS := $(shell ./bin/os)
 
-PERSONA := personal
+SITE := personal
 
 home := $(shell echo $$HOME/ | sed 's/\//\\\//g')
 pwd  := $(shell echo $(PWD) | sed 's/$(home)//g')
 
 .PHONY: help
 help:
-	@echo "Usage: make [PERSONA=personal|softiron|kassette] [target]"
+	@echo "Usage: make [SITE=personal|softiron|kassette] [target]"
 	@grep -oh -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | \
 	awk 'BEGIN {FS = ":.*?## "}; {printf "%-16s  %s\n", $$1, $$2}'
 
@@ -26,18 +26,18 @@ clean-git: ##
 nuke-git: clean-git
 
 ~/.gitconfig: gitconfig
-	@echo Setting Git for PERSONA=$(PERSONA)
+	@echo Setting Git for SITE=$(SITE)
 	cp gitconfig $@
 	@echo "[user]" >> $@
-ifeq ($(strip $(PERSONA)),personal)
+ifeq ($(strip $(SITE)),personal)
 	@echo "\tname = Mason J. Katz" >> $@
 	@echo "\temail = Mason.Katz@gmail.com" >> $@
 endif
-ifeq ($(strip $(PERSONA)),softiron)
+ifeq ($(strip $(SITE)),softiron)
 	@echo "\tname = Mason Katz" >> $@
 	@echo "\temail = Mason.Katz@SoftIron.com" >> $@
 endif
-ifeq ($(strip $(PERSONA)),kassette)
+ifeq ($(strip $(SITE)),kassette)
 	@echo "\tname = Mason Katz" >> $@
 	@echo "\temail = Mason.Katz@Kassette.com" >> $@
 endif
@@ -46,8 +46,10 @@ endif
 ## ZSH
 ##
 
-install-zsh: powerlevel10k ## 
+install-zsh: powerlevel10k ##
+	echo SITE=$(SITE)		> ~/.zshrc-site
 	ln -s $(pwd)/zshrc		~/.zshrc
+	ln -s $(pwd)/zshrc-softiron	~/.zshrc-softiron
 	ln -s $(pwd)/zshrc-macosx	~/.zshrc-macosx
 	ln -s $(pwd)/zshrc-linux	~/.zshrc-linux
 	ln -s $(pwd)/zprofile		~/.zprofile
@@ -56,6 +58,8 @@ install-zsh: powerlevel10k ##
 
 clean-zsh: ## 
 	rm -f ~/.zshrc
+	rm -f ~/.zshrc-size
+	rm -f ~/.zshrc-softiron
 	rm -f ~/.zshrc-macosx
 	rm -f ~/.zshrc-linux
 	rm -f ~/.zprofile
@@ -152,10 +156,10 @@ endif
 nuke: clean nuke-git nuke-zsh nuke-bash nuke-emacs ## removes everything
 
 kassette: ## reset for kassette config
-	$(MAKE) clean install PERSONA=$@
+	$(MAKE) clean install SITE=$@
 
 softiron: ## reset for softiron config
-	$(MAKE) clean install PERSONA=$@
+	$(MAKE) clean install SITE=$@
 
 personal: ## reset for personal config
 	$(MAKE) clean install
