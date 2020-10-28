@@ -5,8 +5,7 @@
 (package-initialize)
 (package-refresh-contents)
 (mapc 'package-install
-      '(company-lsp
-	dockerfile-mode
+      '(dockerfile-mode
 	go-mode
 	markdown-mode
 	prettier-js

@@ -1,13 +1,5 @@
 ;;; emacs.el - main emacs config file shared across all OSes
-;; ____________________________________________________________________________
-;; Aquamacs custom-file warning:
-;; Warning: After loading this .emacs file, Aquamacs will also load
-;; customizations from `custom-file' (customizations.el). Any settings there
-;; will override those made here.
-;; Consider moving your startup settings to the Preferences.el file, which
-;; is loaded after `custom-file':
-;; ~/Library/Preferences/Aquamacs Emacs/Preferences
-;; _____________________________________________________________________________
+
 (add-to-list 'custom-theme-load-path "~/emacs/themes/")
 (add-to-list 'load-path "~/emacs")
 
@@ -18,12 +10,12 @@
 (package-initialize)
 
 (require 'column-marker)
-(require 'company-lsp)
 (require 'dockerfile-mode)
 (require 'go-mode)
 (require 'lsp-mode)
 (require 'prettier-js)
 (require 'python-mode)
+(require 'server)
 (require 'tramp-term)
 (require 'uniquify) 
 (require 'web-mode)
@@ -35,8 +27,6 @@
 		   nil)
   "SoftIron coding conventions")
 
-
-(push 'company-lsp company-backends)
 
 
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
@@ -86,7 +76,9 @@
 (display-time-mode 1)
 (column-number-mode)
 
-(server-start)
+(if (not (server-running-p))
+    (server-start))
+
 
 (setq uniquify-buffer-name-style 'post-forward uniquify-separator ":")
 
@@ -103,10 +95,9 @@
   (show-paren-mode))
 
 
-
 (add-hook 'before-make-frame-hook 'graphic-setup)
 
-(add-hook 'go-mode-hook #'lsp)
+(add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook
 	  '(lambda ()
 	     (if softiron
@@ -185,7 +176,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (yaml-mode web-mode tramp-term python-mode prettier-js markdown-mode dockerfile-mode company-lsp lsp-docker lsp-mode go-mode))))
+    (yaml-mode web-mode tramp-term python-mode prettier-js markdown-mode dockerfile-mode lsp-docker lsp-mode go-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

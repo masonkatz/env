@@ -127,6 +127,7 @@ nuke-emacs: clean-emacs
 export GOPATH=$(HOME)/go
 
 install-go:
+	go get -u golang.org/x/lint/golint
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u github.com/nsf/gocode
 	go get golang.org/x/tools/gopls@latest || GO111MODULE=on go get golang.org/x/tools/gopls@latest
@@ -136,7 +137,7 @@ install-go:
 ## main
 ##
 
-install: install-git install-zsh install-bash install-emacs ## install entire environment
+install: install-git install-zsh install-bash install-emacs install-go ## install entire environment
 ifeq ($(OS),macosx)
 	[ -d ~/.ssh ] || mkdir -m700 .ssh
 	ln -s $(pwd)/ssh-config	~/.ssh/config
