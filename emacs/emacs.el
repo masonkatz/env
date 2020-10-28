@@ -8,29 +8,42 @@
 ;; is loaded after `custom-file':
 ;; ~/Library/Preferences/Aquamacs Emacs/Preferences
 ;; _____________________________________________________________________________
-
-
 (add-to-list 'custom-theme-load-path "~/emacs/themes/")
-
 (add-to-list 'load-path "~/emacs")
-(add-to-list 'load-path "~/emacs/go-mode.el")
-(add-to-list 'load-path "~/emacs/python-mode")
-(add-to-list 'load-path "~/emacs/yaml-mode")
-(add-to-list 'load-path "~/emacs/tramp-term.el")
-(add-to-list 'load-path "~/emacs/dockerfile-mode")
-(add-to-list 'load-path "~/emacs/web-mode")
-(add-to-list 'load-path "~/emacs/prettier-emacs")
 
+(require 'package)
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+;(package-refresh-contents)
+(mapc (lambda (package)
+	(or (package-installed-p package)
+	    (package-install package)))
+      '(company-lsp
+	dockerfile-mode
+	go-mode
+	markdown-mode
+	prettier-js
+	python-mode
+	tramp-term
+	web-mode
+	yaml-mode))
 
-(require 'uniquify) 
 (require 'column-marker)
-(require 'go-mode)
-(require 'python-mode)
-(require 'yaml-mode)
-(require 'tramp-term)
+(require 'company-lsp)
 (require 'dockerfile-mode)
-(require 'web-mode)
+(require 'go-mode)
+(require 'lsp-mode)
 (require 'prettier-js)
+(require 'python-mode)
+(require 'tramp-term)
+(require 'uniquify) 
+(require 'web-mode)
+(require 'yaml-mode)
+
+(push 'company-lsp company-backends)
+
 
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
@@ -69,11 +82,6 @@
 ;	   (url (concat (if no-ssl "http" "https") "://melpa.org/packages/")))
 ;      (add-to-list 'package-archives (cons "melpa" url) t))
 ;    (package-initialize)
-;    (mapc
-;     (lambda (package)
-;       (or (package-installed-p package)
-;	   (package-install package)))
-;     '(markdown-mode go-mode))))
 
 (defun visit-term-buffer ()
   "Create or visit a terminal buffer."
@@ -115,6 +123,7 @@
 
 (add-hook 'before-make-frame-hook 'graphic-setup)
 	     
+(add-hook 'go-mode-hook #'lsp)
 (add-hook 'go-mode-hook
 	  '(lambda ()
 	     (setq tab-width 4)
@@ -184,3 +193,15 @@
 	     (global-code-mode)))
 
 (put 'downcase-region 'disabled nil)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages (quote (company-lsp lsp-docker lsp-mode go-mode))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

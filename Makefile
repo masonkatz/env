@@ -105,43 +105,27 @@ nuke-bash: clean-bash
 ## EMACS
 ##
 
-install-emacs: emacs/python-mode emacs/go-mode.el emacs/dockerfile-mode emacs/yaml-mode emacs/tramp-term.el emacs/web-mode emacs/prettier-emacs ## 
-	ln -s $(pwd)/emacs		~/
-	ln -s ~/emacs/emacs.el		~/.emacs
+install-emacs: ##
+	ln -s $(pwd)/emacs	~/
+	ln -s emacs/emacs.el	~/.emacs
+#	emacs --script emacs/install.el
 
 clean-emacs: ## 
-	rm -f ~/emacs
-	rm -f ~/.emacs
+	rm -f ~/emacs ~/.emacs
 
 nuke-emacs: clean-emacs
-	rm -rf emacs/python-mode
-	rm -rf emacs/go-mode.el
-	rm -rf emacs/dockerfile-mode
-	rm -rf emacs/yaml-mode
-	rm -rf emacs/tramp-term.el
-	rm -rf emacs/web-mode
-	rm -rf emacs/prettier-emacs
+	rm -rf ~/.emacs.d
 
-emacs/python-mode:
-	git clone https://gitlab.com/python-mode-devs/$(notdir $@) emacs/$(notdir $@)
 
-emacs/go-mode.el:
-	git clone https://github.com/dominikh/$(notdir $@) emacs/$(notdir $@)
+##
+## Go
+##
+export GOPATH=$(HOME)/go
 
-emacs/dockerfile-mode:
-	git clone git@github.com:masonkatz/$(notdir $@) emacs/$(notdir $@)
-
-emacs/yaml-mode:
-	git clone https://github.com/yoshiki/$(notdir $@) emacs/$(notdir $@)
-
-emacs/tramp-term.el:
-	git clone https://github.com/randymorris/$(notdir $@) emacs/$(notdir $@)
-
-emacs/web-mode:
-	git clone https://github.com/fxbois/$(notdir $@) emacs/$(notdir $@)
-
-emacs/prettier-emacs:
-	git clone https://github.com/prettier/$(notdir $@) emacs/$(notdir $@)
+install-go:
+	go get -u golang.org/x/tools/cmd/goimports
+	go get -u github.com/nsf/gocode
+	go get golang.org/x/tools/gopls@latest || GO111MODULE=on go get golang.org/x/tools/gopls@latest
 
 
 ##
