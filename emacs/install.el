@@ -9,6 +9,7 @@
 	eterm-256color
 	exec-path-from-shell
 	go-mode
+	lsp-mode
 	markdown-mode
 	prettier-js
 	python-mode
