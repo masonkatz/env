@@ -24,18 +24,18 @@ fi
 
 
 
-if [ -d ~/go/bin ]; then
-	PATH=$PATH:~/go/bin
-fi
-
 DEFAULT_USER=`whoami`
 
 source $ZSH/oh-my-zsh.sh
+
 
 # Do this after zsh setup to fix the ls aliases
 
 case $TERM in
 eterm-color)
+	chpwd() { print -P "\033AnSiTc %d" }
+	print -P "\033AnSiTu %n"
+	print -P "\033AnSiTc %d"
 	alias ls='ls -F --color'
 	DISABLE_AUTO_TITLE="true"
 	;;

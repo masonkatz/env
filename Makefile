@@ -54,6 +54,7 @@ install-zsh: powerlevel10k ##
 	ln -s $(pwd)/zshrc-linux	~/.zshrc-linux
 	ln -s $(pwd)/zprofile		~/.zprofile
 	ln -s $(pwd)/zprofile-macosx	~/.zprofile-macosx
+	ln -s $(pwd)/zshenv		~/.zshenv
 	ln -s $(pwd)/p10k.zsh		~/.p10k.zsh
 
 clean-zsh: ## 

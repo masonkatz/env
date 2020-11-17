@@ -3,6 +3,6 @@
 # SoftIron Specific
 
 export SOFTIRON=1
-
+export BADGO=1
 
 

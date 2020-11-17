@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo 4totab $1
+
+unexpand -t4 --first-only $1 > $1.4totab
+mv $1.4totab $1

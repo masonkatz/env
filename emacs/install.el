@@ -6,10 +6,14 @@
 (package-refresh-contents)
 (mapc 'package-install
       '(dockerfile-mode
+	eterm-256color
+	exec-path-from-shell
 	go-mode
 	markdown-mode
 	prettier-js
 	python-mode
+	solarized-theme
 	tramp-term
 	web-mode
-	yaml-mode))
+	yaml-mode
+	zenburn-theme))

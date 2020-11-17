@@ -12,7 +12,9 @@ if [ -d /usr/local/opt/coreutils/libexec/gnubin ]; then
 	PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
 fi
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+if [[ -z "$INSIDE_EMACS" ]]; then
+	test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+fi
 
 eval `dircolors -b "${HOME}/.dircolors"`
 
