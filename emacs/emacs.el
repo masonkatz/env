@@ -46,7 +46,7 @@
       (tool-bar-mode 0)
       (setq default-directory "~/")
       (exec-path-from-shell-initialize)
-      (set-face-attribute 'default nil :height 140 :family "JetBrains Mono"))
+      (set-face-attribute 'default nil :family "JetBrains Mono" :height 140))
   (progn
     (menu-bar-mode -99)))
 
@@ -144,7 +144,7 @@
   (font-lock-mode))
 
 
-(add-hook 'before-make-frame-hook 'graphic-setup)
+;(add-hook 'before-make-frame-hook 'graphic-setup)
 
 (add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook
@@ -225,3 +225,15 @@
 	     (mjk/code-mode)))
 
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(markdown-header-scaling t))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

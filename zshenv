@@ -13,5 +13,9 @@ fi
 export GOPATH=~/go
 PATH=$PATH:$GOPATH/bin
 
+if [ -d /opt/softiron/share/build ]; then
+	export SI_BUILD=/opt/softiron/share/build
+fi
+
 
 
