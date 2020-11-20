@@ -30,16 +30,16 @@ nuke-git: clean-git
 	cp gitconfig $@
 	@echo "[user]" >> $@
 ifeq ($(strip $(SITE)),personal)
-	@echo "\tname = Mason J. Katz" >> $@
-	@echo "\temail = Mason.Katz@gmail.com" >> $@
+	@echo -e "\tname = Mason J. Katz" >> $@
+	@echo -e "\temail = Mason.Katz@gmail.com" >> $@
 endif
 ifeq ($(strip $(SITE)),softiron)
-	@echo "\tname = Mason Katz" >> $@
-	@echo "\temail = Mason.Katz@SoftIron.com" >> $@
+	@echo -e "\tname = Mason Katz" >> $@
+	@echo -e "\temail = Mason.Katz@SoftIron.com" >> $@
 endif
 ifeq ($(strip $(SITE)),kassette)
-	@echo "\tname = Mason Katz" >> $@
-	@echo "\temail = Mason.Katz@Kassette.com" >> $@
+	@echo -e "\tname = Mason Katz" >> $@
+	@echo -e "\temail = Mason.Katz@Kassette.com" >> $@
 endif
 
 ##
