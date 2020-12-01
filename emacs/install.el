@@ -5,7 +5,8 @@
 (package-initialize)
 (package-refresh-contents)
 (mapc 'package-install
-      '(dockerfile-mode
+      '(company
+	dockerfile-mode
 	eterm-256color
 	exec-path-from-shell
 	go-mode
@@ -17,4 +18,5 @@
 	tramp-term
 	web-mode
 	yaml-mode
+	yasnippet
 	zenburn-theme))

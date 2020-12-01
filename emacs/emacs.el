@@ -148,13 +148,20 @@
 (add-hook 'go-mode-hook
 	  '(lambda ()
 	     (if mjk/bad-go
-		 (setq tab-width 4
-		       indent-tabs-mode nil))
+		 (setq indent-tabs-mode nil))
 	     (add-hook 'before-save-hook '(lambda ()
 					    (if (not mjk/bad-go)
 						(gofmt-before-save))))
+	     (if (and (display-graphic-p) (find-font (font-spec :name "Go Mono")))
+		 (progn
+		   (setq buffer-face-mode-face '(:family "Go Mono" :height 140))
+		   (setq line-spacing 2)
+		   (buffer-face-mode))
+	       (setq line-spacing 0))
 	     (setq tab-width 4)
 	     (mjk/code-mode)))
+
+
 
 (add-hook 'js-mode-hook
 	  '(lambda ()
