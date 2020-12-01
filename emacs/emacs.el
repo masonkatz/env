@@ -14,6 +14,7 @@
 (require 'go-mode)
 (require 'lsp-mode)
 (require 'prettier-js)
+(require 'project)
 (require 'python-mode)
 (require 'server)
 (require 'tramp-term)
@@ -43,14 +44,13 @@
 
 (if (display-graphic-p)
     (progn
-      (tool-bar-mode 0)
       (setq default-directory "~/")
       (exec-path-from-shell-initialize)
-      (set-face-attribute 'default nil :family "JetBrains Mono" :height 140))
-  (progn
-    (menu-bar-mode -99)))
+      (set-face-attribute 'default nil :family "JetBrains Mono" :height 140)))
 
-(setq inhibit-startup-screen t)
+(column-number-mode)
+(display-time-mode)
+(size-indication-mode)
 
 
 (defun ps-print-landscape ()
@@ -88,14 +88,12 @@
 
 (put 'downcase-region 'disabled nil)
 
-(setq display-time-mail-string "")
-(column-number-mode)
 
 (if (not (server-running-p))
     (server-start))
 
 
-(setq uniquify-buffer-name-style 'post-forward uniquify-separator ":")
+;;(setq uniquify-buffer-name-style 'post-forward uniquify-separator ":")
 
 ;;
 ;; Programming Mode Settings
@@ -155,8 +153,7 @@
 	     (add-hook 'before-save-hook '(lambda ()
 					    (if (not mjk/bad-go)
 						(gofmt-before-save))))
-	     (setq tab-width 4
-		   gofmt-command "goimports")
+	     (setq tab-width 4)
 	     (mjk/code-mode)))
 
 (add-hook 'js-mode-hook
@@ -164,7 +161,6 @@
 	     (setq js-indent-level 8)   
 	     (mjk/code-mode)))
 
-(setq c-default-style "linux")
 (add-hook 'c-mode-hook
 	  '(lambda ()
 	     (setq c-basic-offset 4
@@ -175,11 +171,6 @@
 	  '(lambda ()
 	     (mjk/code-mode)))
 
-
-(add-hook 'ruby-mode-hook
-	  '(lambda ()
-	     (setq ruby-indent-level 8)
-	     (mjk/code-mode)))
 
 (add-hook 'css-mode-hook
 	  '(lambda ()
@@ -230,7 +221,31 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(markdown-header-scaling t))
+ '(c-default-style "linux")
+ '(display-time-load-average-threshold 10)
+ '(display-time-mail-string "")
+ '(display-time-world-list
+   '(("America/Los_Angeles" "San Diego")
+     ("America/Phoenix" "Tucson")
+     ("America/Denver" "Santa Fe")
+     ("America/Chicago" "Dallas")
+     ("America/New_York" "New York")
+     ("Etc/UTC" "UTC")
+     ("Europe/Berlin" "Berlin")
+     ("Europe/Moscow" "Moscow")
+     ("Asia/Jerusalem" "Jerusalem")
+     ("Asia/Calcutta" "Bangalore")
+     ("Australia/Perth" "Perth")
+     ("Asia/Tokyo" "Tokyo")))
+ '(display-time-world-time-format "%a %b %d%t%I:%M %p%t%Z")
+ '(eol-mnemonic-unix "")
+ '(gofmt-command "goimports")
+ '(inhibit-startup-screen t)
+ '(markdown-header-scaling t)
+ '(menu-bar-mode nil)
+ '(scroll-bar-mode nil)
+ '(tool-bar-mode nil)
+ '(uniquify-buffer-name-style 'post-forward nil (uniquify)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
