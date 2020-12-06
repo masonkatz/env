@@ -72,7 +72,7 @@ clean-zsh: ##
 	rm -f ~/.zshenv-macosx
 	rm -f ~/.zshenv-linux
 	rm -f ~/.p10k.zsh
-	rm -f ~/.oh-my-zsh/custom/themes/powerlevel10k
+	rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k
 
 nuke-zsh: clean-zsh
 	rm -rf ~/.oh-my-zsh zsh-install.sh
