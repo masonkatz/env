@@ -6,17 +6,26 @@
 (package-refresh-contents)
 (mapc 'package-install
       '(company
-	dockerfile-mode
+	company-quickhelp
+	docker
 	eterm-256color
 	exec-path-from-shell
+	flycheck
 	go-mode
 	lsp-mode
+	lsp-ui
+	magit
+	magit-gitflow
 	markdown-mode
 	prettier-js
+	projectile
 	python-mode
 	solarized-theme
 	tramp-term
+	treemacs
+	treemacs-projectile
 	web-mode
 	yaml-mode
 	yasnippet
+	yasnippet-snippets
 	zenburn-theme))

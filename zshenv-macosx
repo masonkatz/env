@@ -1,0 +1,15 @@
+#!/bin/zsh
+
+# Default to brew installed environment to be more gnu, less apple
+
+if [ -d /usr/local/sbin ]; then
+	PATH=/usr/local/sbin:$PATH
+fi
+if [ -d /usr/local/bin ]; then
+	PATH=/usr/local/bin:$PATH
+fi
+if [ -d /usr/local/opt/coreutils/libexec/gnubin ]; then
+	PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
+fi
+
+

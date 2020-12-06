@@ -55,6 +55,8 @@ install-zsh: powerlevel10k ##
 	ln -s $(pwd)/zprofile		~/.zprofile
 	ln -s $(pwd)/zprofile-macosx	~/.zprofile-macosx
 	ln -s $(pwd)/zshenv		~/.zshenv
+	ln -s $(pwd)/zshenv-macosx	~/.zshenv-macosx
+	ln -s $(pwd)/zshenv-linux	~/.zshenv-linux
 	ln -s $(pwd)/p10k.zsh		~/.p10k.zsh
 
 clean-zsh: ## 
@@ -66,7 +68,11 @@ clean-zsh: ##
 	rm -f ~/.zprofile
 	rm -f ~/.zprofile-macosx
 	rm -f ~/.zprofile-linux
+	rm -f ~/.zshenv
+	rm -f ~/.zshenv-macosx
+	rm -f ~/.zshenv-linux
 	rm -f ~/.p10k.zsh
+	rm -f ~/.oh-my-zsh/custom/themes/powerlevel10k
 
 nuke-zsh: clean-zsh
 	rm -rf ~/.oh-my-zsh zsh-install.sh
@@ -76,7 +82,7 @@ zsh-install.sh:
 	curl -o $@ -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
 
 powerlevel10k: ~/.oh-my-zsh
-	git clone https://github.com/romkatv/$@
+	[ -d $@ ] || git clone https://github.com/romkatv/$@
 	ln -s ../../../$(pwd)/powerlevel10k ~/.oh-my-zsh/custom/themes/powerlevel10k
 
 ~/.oh-my-zsh: zsh-install.sh
