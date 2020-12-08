@@ -27,6 +27,12 @@
 (require 'yasnippet-snippets)
 (require 'magit-gitflow)
 
+(defvar mjk/resolution-font-size-alist '(((1280 800)  . 14)
+					 ((1440 900)  . 14)
+					 ((1680 1050) . 14)
+					 ((3440 1440) . 16))
+  "Font sizes for different monitors")
+
 (defvar mjk/dark-theme 'zenburn
   "Dark mode theme")
 
@@ -45,11 +51,18 @@
 
 (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
 
+
+(defun mjk/font-size ()
+  "Return font size to use based on resolution"
+    (let* ((geometry (cdr (assoc 'geometry (car (display-monitor-attributes-list)))))
+	   (resolution (cddr geometry)))
+      (* 10 (cdr (assoc (cddr geometry) mjk/resolution-font-size-alist)))))
+
+
 (when (display-graphic-p)
   (setq default-directory "~/")
   (exec-path-from-shell-initialize)
-  (when (find-font (font-spec :name "JetBrains Mono"))
-    (set-face-attribute 'default nil :family "JetBrains Mono" :height 140)))
+  (set-face-attribute 'default nil :height (mjk/font-size)))
 
 (column-number-mode)
 (display-time-mode)
@@ -81,7 +94,8 @@
       (ansi-term (getenv "SHELL"))
     (switch-to-buffer "*ansi-term*")))
 
-(global-set-key [f1] 'mjk/visit-term-buffer)
+(global-set-key [tab] 'mjk/tab)
+(global-set-key [f1]  'mjk/visit-term-buffer)
 
 (global-set-key "\M-[h" (lambda () (interactive) (beginning-of-line 'nil)))
 (global-set-key "\M-[f" (lambda () (interactive) (end-of-line 'nil)))
@@ -103,43 +117,6 @@
 (when (not (server-running-p))
   (server-start))
 
-
-;;
-;; Programming Mode Settings
-;;
-
-(defun mjk/use-ligatures ()
-  (if (find-font (font-spec :name "JetBrains Mono"))
-      (let ((ligatures `(
-			 (?-  . ,(regexp-opt '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->")))
-			 (?<  . ,(regexp-opt '("<-" "<<-" "<=>" "<=" "<|" "<||" "<|||::=" "<|>" "<:" "<>" "<-<"
-					       "<<<" "<==" "<<=" "<=<" "<==>" "<-|" "<<" "<~>" "<=|" "<~~" "<~"
-					       "<$>" "<$" "<+>" "<+" "</>" "</" "<*" "<*>" "<->" "<!--")))
-			 (?:  . ,(regexp-opt '(":>" ":<" ":::" "::" ":?" ":?>" ":=")))
-			 (?=  . ,(regexp-opt '("=>>" "==>" "=/=" "=!=" "=>" "===" "=:=" "==")))
-			 (?!  . ,(regexp-opt '("!==" "!!" "!=")))
-			 (?>  . ,(regexp-opt '(">]" ">:" ">>-" ">>=" ">=>" ">>>" ">-" ">=")))
-			 (?&  . ,(regexp-opt '("&&&" "&&")))
-			 (?|  . ,(regexp-opt '("|||>" "||>" "|>" "|]" "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||")))
-			 (?.  . ,(regexp-opt '(".." ".?" ".=" ".-" "..<" "...")))
-			 (?+  . ,(regexp-opt '("+++" "+>" "++")))
-			 (?\[ . ,(regexp-opt '("[||]" "[<" "[|")))
-			 (?\{ . ,(regexp-opt '("{|")))
-			 (?\? . ,(regexp-opt '("??" "?." "?=" "?:")))
-			 (?#  . ,(regexp-opt '("####" "###" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" "##")))
-			 (?\; . ,(regexp-opt '(";;")))
-			 (?_  . ,(regexp-opt '("_|_" "__")))
-			 (?\\ . ,(regexp-opt '("\\" "\\/")))
-			 (?~  . ,(regexp-opt '("~~" "~~>" "~>" "~=" "~-" "~@")))
-			 (?$  . ,(regexp-opt '("$>")))
-			 (?^  . ,(regexp-opt '("^=")))
-			 (?\] . ,(regexp-opt '("]#")))
-			 )))
-	(dolist (char-regexp ligatures)
-	  (set-char-table-range composition-function-table (car char-regexp)
-				`([,(cdr char-regexp) 0 font-shape-gstring]))))))
-
-;; fix yasnippet/company conflicts
 
 (defun check-expansion ()
   (save-excursion
@@ -165,14 +142,15 @@
               (company-complete-common)
             (indent-for-tab-command))))))
 
-(global-set-key [tab] 'mjk/tab)
 
-(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
+
+;;
+;; Programming Mode Settings
+;;
 
 (defun mjk/code-mode ()
   (interactive)
   (when (display-graphic-p)
-;    (mjk/use-ligatures)
     (linum-mode 1))
   (prettify-symbols-mode)
   (show-paren-mode)
@@ -183,7 +161,8 @@
   (flyspell-prog-mode)
   (yas-minor-mode))
 
-;(add-hook 'before-make-frame-hook 'graphic-setup)
+
+(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 (add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook
@@ -195,7 +174,7 @@
 					      (gofmt-before-save))))
 	     (if (and (display-graphic-p) (find-font (font-spec :name "Go Mono")))
 		 (progn
-		   (setq buffer-face-mode-face '(:family "Go Mono" :height 140))
+		   (setq buffer-face-mode-face '(:family "Go Mono" :height (mjk/font-size)))
 		   (setq line-spacing 2)
 		   (buffer-face-mode))
 	       (setq line-spacing 0))
@@ -227,12 +206,12 @@
 
 (add-hook 'python-mode-hook
 	  '(lambda ()
-	     (setq tab-width 8)
-	     (setq python-indent 8)
-	     (setq py-indent-tabs-mode t)
-	     (setq py-indent-offset 8)
-	     (setq py-indent-paren-spanned-multilines-p nil)
-	     (setq py-closing-list-dedents-bos nil)
+	     (setq tab-width 8
+		   python-indent 8
+		   py-indent-tabs-mode t
+		   py-indent-offset 8
+		   py-indent-paren-spanned-multilines-p nil
+		   py-closing-list-dedents-bos nil)
 	     (mjk/code-mode)))
 
 (add-hook 'nxml-mode-hook
@@ -245,6 +224,11 @@
 		   sh-indentation  8
 		   sh-indent-for-case-label 0
 		   sh-indent-for-case-alt '+)
+	     (mjk/code-mode)))
+
+(add-hook 'json-mode
+	  '(lambda ()
+	     (prettier-js-mode)
 	     (mjk/code-mode)))
 
 (add-hook 'web-mode-hook
@@ -292,13 +276,16 @@
      ("Australia/Perth" "Perth")
      ("Asia/Tokyo" "Tokyo")))
  '(display-time-world-time-format "%a %b %d%t%I:%M %p%t%Z")
+ '(global-auto-revert-mode t)
  '(gofmt-command "goimports")
  '(inhibit-startup-screen t)
+ '(initial-frame-alist '((width . 128) (height . 64)))
  '(lsp-ui-doc-delay 0.5)
  '(lsp-ui-doc-enable t)
  '(lsp-ui-doc-include-signature nil)
  '(lsp-ui-doc-position 'bottom)
  '(lsp-ui-sideline-delay 0.5)
+ '(make-backup-files nil)
  '(markdown-header-scaling t)
  '(menu-bar-mode nil)
  '(package-selected-packages
@@ -311,6 +298,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(linum ((t (:background "#3F3F3F" :foreground "#9FC59F" :height 0.75)))))
 
 

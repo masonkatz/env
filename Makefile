@@ -46,7 +46,7 @@ endif
 ## ZSH
 ##
 
-install-zsh: powerlevel10k ##
+install-zsh: ~/.oh-my-zsh/custom/themes/powerlevel10k ##
 	echo SITE=$(SITE)		> ~/.zshrc-site
 	ln -s $(pwd)/zshrc		~/.zshrc
 	ln -s $(pwd)/zshrc-softiron	~/.zshrc-softiron
@@ -72,7 +72,7 @@ clean-zsh: ##
 	rm -f ~/.zshenv-macosx
 	rm -f ~/.zshenv-linux
 	rm -f ~/.p10k.zsh
-	rm -rf ~/.oh-my-zsh/custom/themes/powerlevel10k
+	rm -f ~/.oh-my-zsh/custom/themes/powerlevel10k
 
 nuke-zsh: clean-zsh
 	rm -rf ~/.oh-my-zsh zsh-install.sh
@@ -81,9 +81,10 @@ nuke-zsh: clean-zsh
 zsh-install.sh:
 	curl -o $@ -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
 
-powerlevel10k: ~/.oh-my-zsh
-	[ -d $@ ] || git clone https://github.com/romkatv/$@
-	ln -s ../../../$(pwd)/powerlevel10k ~/.oh-my-zsh/custom/themes/powerlevel10k
+~/.oh-my-zsh/custom/themes/powerlevel10k: ~/.oh-my-zsh
+	[ -d powerlevel10k ] || git clone https://github.com/romkatv/powerlevel10k
+	cd powerlevel10k && git pull
+	ln -s ../../../$(pwd)/powerlevel10k $@
 
 ~/.oh-my-zsh: zsh-install.sh
 	[ -d ~/.oh-my-zsh ] || (sh ./zsh-install.sh --unattended && rm -f ~/.zshrc)
