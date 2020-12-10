@@ -1,11 +1,9 @@
 [color]
 	ui = true
-
 [alias]
 	graph = log --graph --pretty=format:'%Cred%h%Creset - %C(cyan)<%an>%Creset%C(yellow)%d%Creset %s %Cgreen(%cr)' --abbrev-commit --date=relative
 	push = "git push; git push --tags"
 	who = blame -c
-
 [filter "hawser"]
 	clean = git hawser clean %f
 	smudge = git hawser smudge %f
@@ -21,3 +19,17 @@
 	prune = true
 [push]
 	default = current
+
+[gitflow "branch"]
+	master = master
+	develop = develop
+[gitflow "prefix"]
+	feature = feature/
+	bugfix = bugfix/
+	release = release/
+	hotfix = hotfix/
+	support = support/
+	versiontag =
+
+[url "ssh://git@git.softiron.com:30022"]
+	insteadOf = https://git.softiron.com

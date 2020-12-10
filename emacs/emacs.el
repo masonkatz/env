@@ -30,7 +30,12 @@
 (defvar mjk/resolution-font-size-alist '(((1280 800)  . 14)
 					 ((1440 900)  . 14)
 					 ((1680 1050) . 14)
-					 ((3440 1440) . 16))
+					 ((1920 1080) . 14)
+					 ((2560 1440) . 16)
+					 ((3008 1692) . 16)
+					 ((3360 1890) . 16)
+					 ((3440 1440) . 16)
+					 ((3840 2160) . 16))
   "Font sizes for different monitors")
 
 (defvar mjk/dark-theme 'zenburn
@@ -46,6 +51,7 @@
 
 (load-theme mjk/dark-theme t)
 
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
 
@@ -172,12 +178,6 @@
 	     (add-hook 'before-save-hook '(lambda ()
 					    (when (not mjk/bad-go)
 					      (gofmt-before-save))))
-	     (if (and (display-graphic-p) (find-font (font-spec :name "Go Mono")))
-		 (progn
-		   (setq buffer-face-mode-face '(:family "Go Mono" :height (mjk/font-size)))
-		   (setq line-spacing 2)
-		   (buffer-face-mode))
-	       (setq line-spacing 0))
 	     (setq tab-width 4)
 	     (mjk/code-mode)))
 
@@ -226,7 +226,7 @@
 		   sh-indent-for-case-alt '+)
 	     (mjk/code-mode)))
 
-(add-hook 'json-mode
+(add-hook 'json-mode-hook
 	  '(lambda ()
 	     (prettier-js-mode)
 	     (mjk/code-mode)))
@@ -289,7 +289,7 @@
  '(markdown-header-scaling t)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(treemacs-projectile lsp-treemacs treemacs magit-gitflow magit docker projectile zenburn-theme yasnippet-snippets yaml-mode web-mode tramp-term solarized-theme python-mode prettier-js lsp-ui go-mode flycheck exec-path-from-shell eterm-256color company-quickhelp company-lsp))
+   '(nov treemacs-projectile lsp-treemacs treemacs magit-gitflow magit docker projectile zenburn-theme yasnippet-snippets yaml-mode web-mode tramp-term solarized-theme python-mode prettier-js lsp-ui go-mode flycheck exec-path-from-shell eterm-256color company-quickhelp company-lsp))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(uniquify-buffer-name-style 'post-forward nil (uniquify)))
@@ -298,6 +298,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(linum ((t (:background "#3F3F3F" :foreground "#9FC59F" :height 0.75)))))
+ '(linum ((t (:background "#3F3F3F" :foreground "#9FC59F" :height 0.75))))
+ '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline nil :weight bold :height 1.2)))))
 
 

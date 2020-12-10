@@ -17,6 +17,7 @@
 	magit
 	magit-gitflow
 	markdown-mode
+	nov
 	prettier-js
 	projectile
 	python-mode
