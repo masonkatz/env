@@ -148,7 +148,7 @@ install-go:
 install: install-git install-zsh install-bash install-emacs install-go ## install entire environment
 ifeq ($(OS),macosx)
 	[ -d ~/.ssh ] || mkdir -m700 .ssh
-	ln -s $(pwd)/ssh-config	~/.ssh/config
+	ln -s ../$(pwd)/ssh-config	~/.ssh/config
 endif
 	ln -s $(pwd)/dircolors	~/.dircolors
 	ln -s $(pwd)/bin	~/
