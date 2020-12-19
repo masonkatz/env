@@ -12,6 +12,7 @@
 	exec-path-from-shell
 	flycheck
 	go-mode
+	helm
 	lsp-mode
 	lsp-ui
 	magit
