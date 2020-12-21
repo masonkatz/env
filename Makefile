@@ -120,7 +120,7 @@ nuke-bash: clean-bash
 install-emacs: ##
 	ln -s $(pwd)/emacs	~/
 	ln -s emacs/emacs.el	~/.emacs
-	emacs --batch -l emacs/install.el
+##	emacs --batch -l emacs/install.el
 
 clean-emacs: ## 
 	rm -f ~/emacs ~/.emacs

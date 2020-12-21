@@ -1,31 +1,133 @@
 ;;; emacs.el - main emacs config file shared across all OSes
 
-(add-to-list 'load-path "~/emacs")
-(require 'package)
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(package-initialize)
+;; bootstrap for straight package manager
+;; https://github.com/raxod502/straight.el#getting-started
 
-(require 'company)
-(require 'column-marker)
-(require 'docker)
-(require 'exec-path-from-shell)
-(require 'go-mode)
-(require 'lsp-mode)
-(require 'treemacs)
-(require 'treemacs-projectile)
-(require 'prettier-js)
-(require 'projectile)
-(require 'python-mode)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+
+(use-package helm
+  :straight t)
+
+(use-package projectile
+  :straight t)
+
+(use-package helm-projectile
+  :straight t
+  :after (helm projectile)
+  :init
+  (setq projectile-enable-caching t
+	projectile-completion-system 'helm)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :config
+  (projectile-mode)
+  (helm-projectile-on))
+
+(use-package lsp-mode
+  :straight t
+  :hook (go-mode . lsp-deferred))
+
+(use-package lsp-ui
+  :straight t
+  :after (lsp-mode)
+  :config
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (setq lsp-ui-sideline-delay 0.5
+	lsp-ui-doc-delay 0.5
+	lsp-ui-doc-enable t
+	lsp-ui-doc-include-signature nil
+	lsp-ui-doc-position 'bottom))
+
+(use-package helm-lsp
+  :straight t
+  :after (helm lsp-mode)
+  :commands helm-lsp-workspace-symbol)
+
+(use-package company
+  :straight t
+  :bind (:map company-active-map
+         ("C-n" . company-select-next-or-abort)
+         ("C-p" . company-select-previous-or-abort))
+  :config
+  (setq company-idle-delay 0.3)
+  (global-company-mode t))
+
+(use-package company-quickhelp
+  :straight t
+  :after (company)
+  :config
+  (setq company-quickhelp-delay 2))
+
+(use-package helm-company
+  :straight t
+  :after (helm company))
+
+(use-package go-mode
+  :straight t
+  :config
+  (setq gofmt-command "goimports"))
+
+(use-package python-mode
+  :straight t)
+
+(use-package zenburn-theme
+  :straight t)
+
+(use-package exec-path-from-shell
+  :straight t)
+
+(use-package magit
+  :straight t
+  :bind (("C-x g" . magit-status)))
+
+
+(use-package magit-gitflow
+  :straight t
+  :after magit
+  :config (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
+
+
+(use-package yasnippet
+  :straight t)
+
+(use-package yasnippet-snippets
+  :straight t)
+
+(use-package docker
+  :straight t)
+
+(use-package flycheck
+  :straight t
+  :init (global-flycheck-mode))
+
+(add-to-list 'load-path "~/emacs")
+
 (require 'term)
 (require 'server)
-(require 'tramp-term)
-(require 'uniquify) 
-(require 'web-mode)
-(require 'yaml-mode)
-(require 'yasnippet-snippets)
-(require 'magit-gitflow)
+(require 'uniquify)
+
+;; (require 'column-marker)
+;; (require 'treemacs)
+;; (require 'treemacs-projectile)
+;; (require 'prettier-js)
+;; (require 'tramp-term)
+;; (require 'web-mode)
+
+
 
 (defvar mjk/resolution-font-size-alist '(((1280 800)  . 14)
 					 ((1440 900)  . 14)
@@ -73,7 +175,6 @@
 (column-number-mode)
 (display-time-mode)
 (size-indication-mode)
-(projectile-mode +1)
 
 
 (defun ps-print-landscape ()
@@ -100,19 +201,13 @@
       (ansi-term (getenv "SHELL"))
     (switch-to-buffer "*ansi-term*")))
 
-(global-set-key [tab] 'mjk/tab)
+;;(global-set-key [tab] 'mjk/tab)
 (global-set-key [f1]  'mjk/visit-term-buffer)
 
 (global-set-key "\M-[h" (lambda () (interactive) (beginning-of-line 'nil)))
 (global-set-key "\M-[f" (lambda () (interactive) (end-of-line 'nil)))
 
-(define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-(define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
-
 (define-key term-raw-map (kbd "C-c C-y") 'term-paste)
-
-(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 (define-key term-raw-map (kbd "M-x") 'nil) ; still eval sexps in term-mode
 
@@ -161,16 +256,13 @@
   (prettify-symbols-mode)
   (show-paren-mode)
   (electric-pair-mode 1)
-  (company-mode)
   (company-quickhelp-mode)
   (font-lock-mode)
   (flyspell-prog-mode)
   (yas-minor-mode))
 
 
-(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
-(add-hook 'go-mode-hook #'lsp-deferred)
 (add-hook 'go-mode-hook
 	  '(lambda ()
 	     (when mjk/bad-go
@@ -247,11 +339,6 @@
 	     (setq html-helper-basic-offset 8)
 	     (mjk/code-mode)))
 
-; '(lsp-eldoc-hook nil)
-; '(lsp-ui-sideline-ignore-duplicate t)
-; '(lsp-ui-sideline-show-hover t)
-; '(lsp-ui-sideline-show-symbol nil)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -259,7 +346,6 @@
  ;; If there is more than one, they won't work right.
  '(abbrev-file-name "~/emacs/abbrevs")
  '(c-default-style "linux")
- '(company-quickhelp-delay 2)
  '(display-time-load-average-threshold 10)
  '(display-time-mail-string "")
  '(display-time-world-list
@@ -277,19 +363,11 @@
      ("Asia/Tokyo" "Tokyo")))
  '(display-time-world-time-format "%a %b %d%t%I:%M %p%t%Z")
  '(global-auto-revert-mode t)
- '(gofmt-command "goimports")
  '(inhibit-startup-screen t)
  '(initial-frame-alist '((width . 128) (height . 64)))
- '(lsp-ui-doc-delay 0.5)
- '(lsp-ui-doc-enable t)
- '(lsp-ui-doc-include-signature nil)
- '(lsp-ui-doc-position 'bottom)
- '(lsp-ui-sideline-delay 0.5)
  '(make-backup-files nil)
  '(markdown-header-scaling t)
  '(menu-bar-mode nil)
- '(package-selected-packages
-   '(nov treemacs-projectile lsp-treemacs treemacs magit-gitflow magit docker projectile zenburn-theme yasnippet-snippets yaml-mode web-mode tramp-term solarized-theme python-mode prettier-js lsp-ui go-mode flycheck exec-path-from-shell eterm-256color company-quickhelp company-lsp))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(uniquify-buffer-name-style 'post-forward nil (uniquify)))
@@ -298,7 +376,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(linum ((t (:background "#3F3F3F" :foreground "#9FC59F" :height 0.75))))
+ '(linum ((t (:height 0.75))))
  '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline nil :weight bold :height 1.2)))))
 
 
