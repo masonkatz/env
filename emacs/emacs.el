@@ -1,32 +1,48 @@
-;;; emacs.el - main emacs config file shared across all OSes
+;;; emacs.el --- top level config -*- eval: (outshine-cycle-buffer 2) -*-
+;;; Commentary:
+;;
+;; Portable across MacOS and Linux, but assumes a fairly recent version of EMACS.
+;;
+;;; Code:
 
-(add-to-list 'load-path "~/emacs")
-(require 'package)
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(package-initialize)
+;;;; Bootstrap straight.el and use-package
 
-(require 'company)
-(require 'column-marker)
-(require 'docker)
-(require 'exec-path-from-shell)
-(require 'helm)
-(require 'go-mode)
-(require 'lsp-mode)
-(require 'treemacs)
-(require 'treemacs-projectile)
-(require 'prettier-js)
-(require 'projectile)
-(require 'python-mode)
-(require 'term)
-(require 'server)
-(require 'tramp-term)
-(require 'uniquify) 
-(require 'web-mode)
-(require 'yaml-mode)
-(require 'yasnippet-snippets)
-(require 'magit-gitflow)
+;; bootstrap for straight package manager
+;; https://github.com/raxod502/straight.el#getting-started
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+
+;;;; Startup
+
+
+(use-package server
+  :config
+  (when (not (server-running-p))
+    (server-start)))
+
+(use-package exec-path-from-shell
+  :straight t
+  :if (memq window-system '(mac ns))
+  :config
+  (when (display-graphic-p)
+    (exec-path-from-shell-initialize)))
+
+(when (display-graphic-p)
+  (setq default-directory "~/"))
+
+;;;; Font & Ligatures
 
 (defvar mjk/resolution-font-size-alist '(((1280 800)  . 14)
 					 ((1440 900)  . 14)
@@ -37,57 +53,92 @@
 					 ((3360 1890) . 16)
 					 ((3440 1440) . 16)
 					 ((3840 2160) . 16))
-  "Font sizes for different monitors")
-
-(defvar mjk/dark-theme 'zenburn
-  "Dark mode theme")
-
-(defvar mjk/light-theme 'solarized-light
-  "Light mode theme - used for printing")
-
-(defvar mjk/dark-mode-p nil
-  "Are we dark or light")
-
-(defvar mjk/bad-go (if (getenv "BADGO")
-		     't
-		   nil)
-  "Use non-standard Go conventions")
-
+  "Font sizes for different monitors.")
 
 (defun mjk/font-size ()
-  "Return font size to use based on resolution"
+  "Return font size to use based on resolution."
     (let* ((geometry (cdr (assoc 'geometry (car (display-monitor-attributes-list)))))
 	   (resolution (cddr geometry)))
       (* 10 (cdr (assoc (cddr geometry) mjk/resolution-font-size-alist)))))
 
-(defun mjk/print-landscape ()
-  "Landscape print current buffer"
-  (interactive) 
-  (let ((ps-font-size '(8 . 10))
-	(ps-line-number t)
-	(ps-landscape-mode t)
-	(ps-number-of-columns 1)
-	(pretty prettify-symbols-mode)
-	(dark mjk/dark-mode-p))
-    (when pretty
-      (prettify-symbols-mode))
-    (mjk/force-light-mode)
-;;    (ps-print-buffer-with-faces)
-    (when dark
-      (mjk/force-dark-mode))
-    (disable-theme mjk/light-theme)
-    (when pretty
-	(prettify-symbols-mode))))
+(when (display-graphic-p)
+  (set-face-attribute 'default nil :height (mjk/font-size))
+  (when (find-font (font-spec :name "JetBrains Mono"))
+    (set-face-attribute 'default nil :family "JetBrains Mono")))
+
+;; ligatures -- full set from JetBrains -- pick your favorite
+;;
+;; "--" "---" "==" "===" "!=" "!==" "=!=" "=:=" "=/="
+;; "<=" ">=" "&&" "&&&" "&=" "++" "+++" "***" ";;"
+;; "!!" "??" "?:" "?." "?=" "<:" ":<" ":>" ">:"
+;; "<>" "<<<" ">>>" "<<" ">>" "||" "-|" "_|_" "|-"
+;; "||-" "|=" "||=" "##" "###" "####" "#{" "#[" "]#"
+;; "#(" "#?" "#_" "#_(" "#:" "#!" "#=" "^=" "<$>"
+;; "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</"
+;; "</>" "/>" "<!--" "<#--" "-->" "->" "->>" "<<-"
+;; "<-" "<=<" "=<<" "<<=" "<==" "<=>" "<==>" "==>"
+;; "=>" "=>>" ">=>" ">>=" ">>-" ">-" ">--" "-<" "-<<"
+;; ">->" "<-<" "<-|" "<=|" "|=>" "|->" "<->" "<~~"
+;; "<~" "<~>" "~~" "~~>" "~>" "~-" "-~" "~@"
+;; "[||]" "|]" "[|" "|}" "{|" "[<" ">]" "|>" "<|"
+;; "||>" "<||" "|||>" "<|||" "<|>" "..." ".." ".="
+;; ".-" "..<" ".?" "::" ":::" ":=" "::=" ":?" ":?>"
+
+(use-package ligature
+  :straight
+  (ligatures :type git :host github :repo "mickeynp/ligature.el")
+  :config
+  (ligature-set-ligatures 'prog-mode '("--" "++"
+				       "==" "!="
+				       "<=" ">="
+				       "&&" "&="
+				       "||" "|="
+				       "##" "###" "####"
+				       "#!"
+				       "/>" "</>"
+				       "<!--" "-->"
+				       ".." "..."
+				       "::"
+				       ":="
+				       "//"
+				       "/*" "***" "*/"))
+  :hook
+  (prog-mode . ligature-mode))
+
+;;;; Modeline
+
+(use-package powerline
+  :straight t
+  :init
+  (powerline-default-theme)
+  :config
+  (column-number-mode)
+  (display-time-mode)
+  (size-indication-mode))
+
+;;;; Dark/Light Modes
+
+(use-package zenburn-theme :straight t)
+(use-package solarized-theme :straight t)
+
+(defvar mjk/dark-mode-p nil
+  "Are we dark or light.")
+
+(defvar mjk/dark-theme 'zenburn
+  "Dark mode theme.")
+
+(defvar mjk/light-theme 'solarized-light
+  "Light mode theme - used for printing.")
 
 (defun mjk/dark-mode ()
-  "Toggles dark/light mode"
+  "Toggle dark/light mode."
   (interactive)
   (if (string= mjk/dark-mode-p t)
       (mjk/force-light-mode)
     (mjk/force-dark-mode)))
 
 (defun mjk/force-dark-mode ()
-  "Force dark mode"
+  "Force dark mode."
   (when (not (string= mjk/dark-mode-p t))
     (when (not (custom-theme-p mjk/dark-theme))
       (load-theme mjk/dark-theme t))
@@ -96,7 +147,7 @@
     (setq mjk/dark-mode-p t)))
 
 (defun mjk/force-light-mode ()
-  "Force light mode"
+  "Force light mode."
   (when (string= mjk/dark-mode-p t)
     (when (not (custom-theme-p mjk/light-theme))
       (load-theme mjk/light-theme t))
@@ -104,19 +155,105 @@
     (enable-theme mjk/light-theme)
     (setq mjk/dark-mode-p nil)))
 
-(defun mjk/eshell ()
-  "Create or visit eshell buffer"
-  (interactive)
-  (if (not (get-buffer "*eshell*"))
-      (eshell)
-    (switch-to-buffer "*eshell*")))
+(mjk/dark-mode) ;; do it
 
-(defun mjk/ansi-term ()
-  "Create or visit a terminal buffer."
+;;;; Printing
+
+(defun mjk/print-landscape ()
+  "Landscape print current buffer."
   (interactive)
-  (if (not (get-buffer "*ansi-term*"))
-      (ansi-term (getenv "SHELL"))
-    (switch-to-buffer "*ansi-term*")))
+  (let ((ps-font-size '(8 . 10))
+	(ps-line-number t)
+	(ps-landscape-mode t)
+	(ps-number-of-columns 1)
+	(ligatures ligature-mode)
+	(pretty prettify-symbols-mode)
+	(dark mjk/dark-mode-p))
+    (when pretty (prettify-symbols-mode))
+    (when ligatures (ligature-mode))
+    (mjk/force-light-mode)
+    (ps-print-buffer-with-faces)
+    (when dark (mjk/force-dark-mode))
+    (when ligatures (ligature-mode))
+    (when pretty (prettify-symbols-mode))))
+
+;;;; Outlining
+
+(use-package outshine
+  :straight t
+  :bind (:map outshine-mode-map
+	      ("<tab>" . outshine-kbd-TAB))
+  :hook
+  (prog-mode . outshine-mode))
+
+;;;; Which Key
+
+(use-package which-key
+  :straight t
+  :init
+  (which-key-mode))
+
+;;;; Helm
+
+(use-package helm
+  :straight t
+  :bind
+  (([remap find-file] . helm-find-files)
+   ([remap execute-extended-command] . helm-M-x)
+   ([remap list-buffers] . helm-buffers-list)
+   ("C-x b"              . helm-buffers-list))
+  :config
+  (helm-mode 1))
+
+(use-package helm-projectile
+  :straight t
+  :after (helm projectile)
+  :init
+  (setq projectile-enable-caching t
+	projectile-completion-system 'helm)
+  :config
+  (helm-projectile-on))
+
+(use-package helm-lsp
+  :straight t
+  :after (helm lsp-mode)
+  :commands helm-lsp-workspace-symbol)
+
+(use-package helm-company
+  :straight t
+  :after (helm company))
+
+;;;; Projectile
+
+(use-package projectile
+  :straight t
+  :init
+  (projectile-mode +1)
+  :bind-keymap
+  ("C-c p" . projectile-command-map))
+
+
+;;;; Company
+
+(use-package company
+  :straight t
+  :bind (:map company-active-map
+              ("C-n" . company-select-next-or-abort)
+              ("C-p" . company-select-previous-or-abort))
+  :config
+  (setq company-idle-delay 0.3)
+  (global-company-mode t))
+
+(use-package company-quickhelp
+  :straight t
+  :after (company)
+  :config
+  (setq company-quickhelp-delay 2))
+
+;;;; Fix Tab
+
+;; Combination of yas/company/term really messes stuff up, need to
+;; define custom tab command
 
 (defun check-expansion ()
   (save-excursion
@@ -131,6 +268,7 @@
     (yas/expand)))
 
 (defun mjk/tab ()
+  "Tab for all modes."
   (interactive)
   (if (string= major-mode "term-mode")
       (term-send-raw-string "\t")
@@ -142,165 +280,218 @@
               (company-complete-common)
             (indent-for-tab-command))))))
 
-(defun mjk/code-mode ()
-  (when (display-graphic-p)
-    (linum-mode 1))
-  (set (make-variable-buffer-local 'x-stretch-cursor) t)
-  (prettify-symbols-mode)
-  (show-paren-mode)
-  (electric-pair-mode 1)
-  (company-mode)
-  (company-quickhelp-mode)
-  (font-lock-mode)
-  (flyspell-prog-mode)
-  (yas-minor-mode))
+(global-set-key [tab] 'mjk/tab)
 
+;;;; System Administration
+;;;;; Docker
 
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
+(use-package docker
+  :straight t)
 
-(setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+;;;;; Terminal
 
+(use-package tramp-term
+  :straight t)
 
+(use-package term
+  :demand t				; force load to get the keymap
+  :bind (:map term-raw-map
+	      ("C-c C-y" . term-paste)
+	      ("M-x" . nil)))		; M-x works as normal
 
-(when (not (server-running-p))
-  (server-start))
+(use-package esh-mode
+  :hook
+  (eshell-mode . (lambda ()
+		   (define-key eshell-mode-map "\C-p" 'eshell-previous-input)
+		   (define-key eshell-mode-map "\C-n" 'eshell-next-input))))
 
-(when (display-graphic-p)
-  (setq default-directory "~/")
-  (exec-path-from-shell-initialize)
-  (set-face-attribute 'default nil :height (mjk/font-size)))
+(defun mjk/ansi-term ()
+  "Create or visit a terminal buffer."
+  (interactive)
+  (if (not (get-buffer "*ansi-term*"))
+      (ansi-term (getenv "SHELL"))
+    (switch-to-buffer "*ansi-term*")))
 
-(put 'downcase-region 'disabled nil)
-(column-number-mode)
-(display-time-mode)
-(size-indication-mode)
-(projectile-mode +1)
-(mjk/dark-mode)
+(defun mjk/eshell ()
+  "Create or visit eshell buffer."
+  (interactive)
+  (if (not (get-buffer "*eshell*"))
+      (eshell)
+    (switch-to-buffer "*eshell*")))
 
-
-
-;;(global-set-key [tab] 'mjk/tab)
 (global-set-key [f1]  'mjk/ansi-term)
 (global-set-key [f2]  'mjk/eshell)
 
-(global-set-key "\M-[h" (lambda () (interactive) (beginning-of-line 'nil)))
-(global-set-key "\M-[f" (lambda () (interactive) (end-of-line 'nil)))
+;;;; Writing
+;;;;; Flycheck
 
-(define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-(define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+(use-package flycheck
+  :straight t
+  :config
+  (global-flycheck-mode))
 
-(define-key term-raw-map (kbd "C-c C-y") 'term-paste)
+;;;;; Markdown
 
-(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(use-package markdown-mode
+  :straight t
+  :custom
+  (markdown-header-scaling t))
 
-(define-key term-raw-map (kbd "M-x") 'nil) ; still eval sexps in term-mode
+;;;; Progamming
+;;;;; Git
 
-(define-key global-map [remap find-file] 'helm-find-files)
-(define-key global-map [remap execute-extended-command] 'helm-M-x)
-(define-key global-map [remap list-buffers] 'helm-buffers-list)
+(use-package magit
+  :straight t
+  :bind (("C-x g" . magit-status)))
 
-(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
+(use-package magit-gitflow
+  :straight t
+  :after magit
+  :hook (magit-mode-hook . turn-on-magit-gitflow))
 
-(add-hook 'go-mode-hook #'lsp-deferred)
-(add-hook 'go-mode-hook
+;;;;; LSP
+
+(use-package lsp-mode
+  :straight t
+  :hook (go-mode . lsp-deferred)
+  :config
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-tramp-connection "gopls")
+		    :major-modes '(go-mode)
+		    :remote? t
+                    :server-id 'gopls-remote)))
+
+
+(use-package lsp-ui
+  :straight t
+  :after (lsp-mode)
+  :config
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (setq lsp-ui-sideline-delay 0.5
+	lsp-ui-doc-delay 0.5
+	lsp-ui-doc-enable t
+	lsp-ui-doc-include-signature nil
+	lsp-ui-doc-position 'bottom))
+
+;;;;; Yasnippet
+
+(use-package yasnippet
+  :straight t)
+
+(use-package yasnippet-snippets
+  :straight t)
+
+;;;;; Languages
+;;;;;; all
+
+(add-hook 'prog-mode-hook
 	  '(lambda ()
-	     (when mjk/bad-go
-	       (setq indent-tabs-mode nil))
-	     (add-hook 'before-save-hook '(lambda ()
-					    (when (not mjk/bad-go)
-					      (gofmt-before-save))))
-	     (setq tab-width 4)
-	     (mjk/code-mode)))
+	     (when (display-graphic-p)
+	       (linum-mode 1))
+	     (set (make-variable-buffer-local 'x-stretch-cursor) t)
+	     (prettify-symbols-mode)
+	     (show-paren-mode)
+	     (electric-pair-mode 1)
+	     (company-quickhelp-mode)
+	     (font-lock-mode)
+	     (flyspell-prog-mode)
+	     (yas-minor-mode)))
 
+;;;;;; C/C++
 
+(use-package cc-mode
+  :config
+  (setq c-default-style "linux")
+  :hook
+  (c-mode . (lambda ()
+	      (setq c-basic-offset 4
+		    tab-width 4))))
 
-(add-hook 'js-mode-hook
-	  '(lambda ()
-	     (setq js-indent-level 8)   
-	     (mjk/code-mode)))
+;;;;;; Go
 
-(add-hook 'c-mode-hook
-	  '(lambda ()
-	     (setq c-basic-offset 4
-		   tab-width 4)
-	     (mjk/code-mode)))
+(defvar mjk/bad-go (if (getenv "BADGO")
+		     't
+		   nil)
+  "Use non-standard Go conventions.")
 
-(add-hook 'emacs-lisp-mode-hook
-	  '(lambda ()
-	     (mjk/code-mode)))
+(use-package go-mode
+  :straight t
+  :hook ((go . (lambda ()
+		 (when mjk/bad-go
+		   (setq indent-tabs-mode nil))
+		 (setq tab-width 4)))
+	 (before-save . (lambda ()
+			  (when (not mjk/bad-go)
+			    (gofmt-before-save)))))
+  :config
+  (setq gofmt-command "goimports"))
 
+;;;;;; Javascript
 
-(add-hook 'css-mode-hook
-	  '(lambda ()
-	     (setq css-indent-offset 8)
-	     (mjk/code-mode)))
+(use-package web-mode
+  :straight t
+  :hook
+  (web-mode . (lambda ()
+		(when (equal web-mode-content-type "javascript")
+		  (web-mode-set-content-type "jsx")) ;; react
+		(setq web-mode-markup-indent-offset 2
+		      web-mode-css-indent-offset 2
+		      web-mode-code-indent-offset 2)))
+  :config
+  (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
+  (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
 
-(add-hook 'python-mode-hook
-	  '(lambda ()
-	     (setq tab-width 8
-		   python-indent 8
-		   py-indent-tabs-mode t
-		   py-indent-offset 8
-		   py-indent-paren-spanned-multilines-p nil
-		   py-closing-list-dedents-bos nil)
-	     (mjk/code-mode)))
+(use-package prettier-js
+  :straight t
+  :hook
+  ((js-mode   . prettier-js-mode)
+   (json-mode . prettier-js-mode)
+   (web-mode  . prettier-js-mode)))
 
-(add-hook 'nxml-mode-hook
-	  '(lambda ()
-	     (setq nxml-child-indent 8)))
+;;;;;; Python
+
+(use-package python-mode
+  :straight t
+  :hook (python-mode . (lambda ()
+			 (setq tab-width 8
+			       python-indent 8
+			       py-indent-tabs-mode t
+			       py-indent-offset 8
+			       py-indent-paren-spanned-multilines-p nil
+			       py-closing-list-dedents-bos nil))))
+
+;;;;;; Shell
 
 (add-hook 'sh-mode-hook
 	  '(lambda ()
 	     (setq sh-basic-offset 8
 		   sh-indentation  8
 		   sh-indent-for-case-label 0
-		   sh-indent-for-case-alt '+)
-	     (mjk/code-mode)))
+		   sh-indent-for-case-alt '+)))
 
-(add-hook 'json-mode-hook
-	  '(lambda ()
-	     (prettier-js-mode)
-	     (mjk/code-mode)))
+;;;;;; Yaml
 
-(add-hook 'web-mode-hook
-	  '(lambda ()
-	     (when (equal web-mode-content-type "javascript")
-	       (web-mode-set-content-type "jsx")) ;; react
-	     (setq web-mode-markup-indent-offset 2
-		   web-mode-css-indent-offset 2
-		   web-mode-code-indent-offset 2)
-	     (prettier-js-mode)
-	     (mjk/code-mode)))
+(use-package yaml-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
+;;;; Misc
 
-(add-hook 'html-helper-mode-hook
-	  '(lambda ()
-	     (setq html-helper-basic-offset 8)
-	     (mjk/code-mode)))
+(use-package uniquify
+  :config
+  (setq uniquify-buffer-name-style 'post-forward))
 
-; '(lsp-eldoc-hook nil)
-; '(lsp-ui-sideline-ignore-duplicate t)
-; '(lsp-ui-sideline-show-hover t)
-; '(lsp-ui-sideline-show-symbol nil)
+(put 'downcase-region 'disabled nil)
 
-
-
+;;; Custom
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(abbrev-file-name "~/emacs/abbrevs")
- '(ansi-color-names-vector
-   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
- '(c-default-style "linux")
- '(company-quickhelp-color-background "#4F4F4F")
- '(company-quickhelp-color-foreground "#DCDCCC")
- '(company-quickhelp-delay 2)
  '(display-time-load-average-threshold 10)
  '(display-time-mail-string "")
  '(display-time-world-list
@@ -317,54 +508,220 @@
      ("Australia/Perth" "Perth")
      ("Asia/Tokyo" "Tokyo")))
  '(display-time-world-time-format "%a %b %d%t%I:%M %p%t%Z")
- '(fci-rule-color "#383838")
  '(global-auto-revert-mode t)
- '(gofmt-command "goimports")
  '(inhibit-startup-screen t)
  '(initial-frame-alist '((width . 128) (height . 64)))
- '(lsp-ui-doc-delay 0.5)
- '(lsp-ui-doc-enable t)
- '(lsp-ui-doc-include-signature nil)
- '(lsp-ui-doc-position 'bottom)
- '(lsp-ui-sideline-delay 0.5)
  '(make-backup-files nil)
- '(markdown-header-scaling t)
  '(menu-bar-mode nil)
- '(nrepl-message-colors
-   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
- '(package-selected-packages
-   '(helm-core helm nov treemacs-projectile lsp-treemacs treemacs magit-gitflow magit docker projectile zenburn-theme yasnippet-snippets yaml-mode web-mode tramp-term solarized-theme python-mode prettier-js lsp-ui go-mode flycheck exec-path-from-shell eterm-256color company-quickhelp company-lsp))
- '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
+ '(safe-local-variable-values
+   '((lsp--override-calculate-lisp-indent\? . t)
+     (flycheck-disabled-checkers quote
+				 (emacs-lisp-checkdoc))
+     (eval progn
+	   (let
+	       ((dirloc-lsp-defun-regexp
+		 (concat
+		  (concat "^\\s-*(" "lsp-defun" "\\s-+\\(")
+		  (or
+		   (bound-and-true-p lisp-mode-symbol-regexp)
+		   "\\(?:\\sw\\|\\s_\\|\\\\.\\)+")
+		  "\\)")))
+	     (add-to-list 'imenu-generic-expression
+			  (list "Functions" dirloc-lsp-defun-regexp 1)))
+	   (defvar lsp--override-calculate-lisp-indent\? nil "Whether to override `lisp-indent-function' with
+              the updated `calculate-lisp-indent' definition from
+              Emacs 28.")
+	   (defun wrap-calculate-lisp-indent
+	       (func &optional parse-start)
+	     "Return appropriate indentation for current line as Lisp code.
+In usual case returns an integer: the column to indent to.
+If the value is nil, that means don't change the indentation
+because the line starts inside a string.
+
+PARSE-START may be a buffer position to start parsing from, or a
+parse state as returned by calling `parse-partial-sexp' up to the
+beginning of the current line.
+
+The value can also be a list of the form (COLUMN CONTAINING-SEXP-START).
+This means that following lines at the same level of indentation
+should not necessarily be indented the same as this line.
+Then COLUMN is the column to indent to, and CONTAINING-SEXP-START
+is the buffer position of the start of the containing expression."
+	     (if
+		 (not lsp--override-calculate-lisp-indent\?)
+		 (funcall func parse-start)
+	       (save-excursion
+		 (beginning-of-line)
+		 (let
+		     ((indent-point
+		       (point))
+		      state
+		      (desired-indent nil)
+		      (retry t)
+		      whitespace-after-open-paren calculate-lisp-indent-last-sexp containing-sexp)
+		   (cond
+		    ((or
+		      (markerp parse-start)
+		      (integerp parse-start))
+		     (goto-char parse-start))
+		    ((null parse-start)
+		     (beginning-of-defun))
+		    (t
+		     (setq state parse-start)))
+		   (unless state
+		     (while
+			 (<
+			  (point)
+			  indent-point)
+		       (setq state
+			     (parse-partial-sexp
+			      (point)
+			      indent-point 0))))
+		   (while
+		       (and retry state
+			    (>
+			     (elt state 0)
+			     0))
+		     (setq retry nil)
+		     (setq calculate-lisp-indent-last-sexp
+			   (elt state 2))
+		     (setq containing-sexp
+			   (elt state 1))
+		     (goto-char
+		      (1+ containing-sexp))
+		     (if
+			 (and calculate-lisp-indent-last-sexp
+			      (> calculate-lisp-indent-last-sexp
+				 (point)))
+			 (let
+			     ((peek
+			       (parse-partial-sexp calculate-lisp-indent-last-sexp indent-point 0)))
+			   (if
+			       (setq retry
+				     (car
+				      (cdr peek)))
+			       (setq state peek)))))
+		   (if retry nil
+		     (goto-char
+		      (1+ containing-sexp))
+		     (setq whitespace-after-open-paren
+			   (looking-at
+			    (rx whitespace)))
+		     (if
+			 (not calculate-lisp-indent-last-sexp)
+			 (setq desired-indent
+			       (current-column))
+		       (parse-partial-sexp
+			(point)
+			calculate-lisp-indent-last-sexp 0 t)
+		       (cond
+			((looking-at "\\s("))
+			((>
+			  (save-excursion
+			    (forward-line 1)
+			    (point))
+			  calculate-lisp-indent-last-sexp)
+			 (if
+			     (or
+			      (=
+			       (point)
+			       calculate-lisp-indent-last-sexp)
+			      whitespace-after-open-paren)
+			     nil
+			   (progn
+			     (forward-sexp 1)
+			     (parse-partial-sexp
+			      (point)
+			      calculate-lisp-indent-last-sexp 0 t)))
+			 (backward-prefix-chars))
+			(t
+			 (goto-char calculate-lisp-indent-last-sexp)
+			 (beginning-of-line)
+			 (parse-partial-sexp
+			  (point)
+			  calculate-lisp-indent-last-sexp 0 t)
+			 (backward-prefix-chars)))))
+		   (let
+		       ((normal-indent
+			 (current-column)))
+		     (cond
+		      ((elt state 3)
+		       nil)
+		      ((and
+			(integerp lisp-indent-offset)
+			containing-sexp)
+		       (goto-char containing-sexp)
+		       (+
+			(current-column)
+			lisp-indent-offset))
+		      (calculate-lisp-indent-last-sexp
+		       (or
+			(and lisp-indent-function
+			     (not retry)
+			     (funcall lisp-indent-function indent-point state))
+			(and
+			 (save-excursion
+			   (goto-char indent-point)
+			   (skip-chars-forward " 	")
+			   (looking-at ":"))
+			 (save-excursion
+			   (goto-char calculate-lisp-indent-last-sexp)
+			   (backward-prefix-chars)
+			   (while
+			       (not
+				(or
+				 (looking-back "^[ 	]*\\|([ 	]+"
+					       (line-beginning-position))
+				 (and containing-sexp
+				      (>=
+				       (1+ containing-sexp)
+				       (point)))))
+			     (forward-sexp -1)
+			     (backward-prefix-chars))
+			   (setq calculate-lisp-indent-last-sexp
+				 (point)))
+			 (> calculate-lisp-indent-last-sexp
+			    (save-excursion
+			      (goto-char
+			       (1+ containing-sexp))
+			      (parse-partial-sexp
+			       (point)
+			       calculate-lisp-indent-last-sexp 0 t)
+			      (point)))
+			 (let
+			     ((parse-sexp-ignore-comments t)
+			      indent)
+			   (goto-char calculate-lisp-indent-last-sexp)
+			   (or
+			    (and
+			     (looking-at ":")
+			     (setq indent
+				   (current-column)))
+			    (and
+			     (<
+			      (line-beginning-position)
+			      (prog2
+				  (backward-sexp)
+				  (point)))
+			     (looking-at ":")
+			     (setq indent
+				   (current-column))))
+			   indent))
+			normal-indent))
+		      (desired-indent)
+		      (t normal-indent)))))))
+	   (when
+	       (< emacs-major-version 28)
+	     (advice-add #'calculate-lisp-indent :around #'wrap-calculate-lisp-indent)))
+     (eval outshine-cycle-buffer 2)
+     (eval outshine-cycle-buffer)))
  '(scroll-bar-mode nil)
- '(tool-bar-mode nil)
- '(uniquify-buffer-name-style 'post-forward nil (uniquify))
- '(vc-annotate-background "#2B2B2B")
- '(vc-annotate-color-map
-   '((20 . "#BC8383")
-     (40 . "#CC9393")
-     (60 . "#DFAF8F")
-     (80 . "#D0BF8F")
-     (100 . "#E0CF9F")
-     (120 . "#F0DFAF")
-     (140 . "#5F7F5F")
-     (160 . "#7F9F7F")
-     (180 . "#8FB28F")
-     (200 . "#9FC59F")
-     (220 . "#AFD8AF")
-     (240 . "#BFEBBF")
-     (260 . "#93E0E3")
-     (280 . "#6CA0A3")
-     (300 . "#7CB8BB")
-     (320 . "#8CD0D3")
-     (340 . "#94BFF3")
-     (360 . "#DC8CC3")))
- '(vc-annotate-very-old-color "#DC8CC3"))
+ '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(linum ((t (:height 0.75))))
- '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline nil :weight bold :height 1.2)))))
+ '(linum ((t (:height 0.75)))))
 
 

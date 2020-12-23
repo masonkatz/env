@@ -7,8 +7,11 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 export ZSH=~/.oh-my-zsh
-ZSH_THEME="powerlevel10k/powerlevel10k"
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+if [[ "$TERM" != "dumb" ]]; then
+	ZSH_THEME="powerlevel10k/powerlevel10k"
+	[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+fi
 
 CASE_SENSITIVE="true"
 

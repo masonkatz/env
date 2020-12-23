@@ -1,3 +1,5 @@
+# * Makefile
+
 OS := $(shell ./bin/os)
 
 SITE := personal
@@ -14,9 +16,7 @@ help:
 default:
 	@echo Running on $(OS)
 
-##
-## Git
-##
+# * Git
 
 install-git: ~/.gitconfig ##
 
@@ -42,9 +42,7 @@ ifeq ($(strip $(SITE)),kassette)
 	@echo "        email = Mason.Katz@Kassette.com" >> $@
 endif
 
-##
-## ZSH
-##
+# * ZSH
 
 install-zsh: ~/.oh-my-zsh/custom/themes/powerlevel10k ##
 	echo SITE=$(SITE)		> ~/.zshrc-site
@@ -89,10 +87,7 @@ zsh-install.sh:
 ~/.oh-my-zsh: zsh-install.sh
 	[ -d ~/.oh-my-zsh ] || (sh ./zsh-install.sh --unattended && rm -f ~/.zshrc)
 
-
-##
-## BASH
-##
+# * BASH
 
 install-bash: ## 
 	ln -s $(pwd)/bashrc		~/.bashrc
@@ -112,15 +107,11 @@ clean-bash: ##
 
 nuke-bash: clean-bash
 
-
-##
-## EMACS
-##
+# * EMACS
 
 install-emacs: ##
 	ln -s $(pwd)/emacs	~/
 	ln -s emacs/emacs.el	~/.emacs
-	emacs --batch -l emacs/install.el
 
 clean-emacs: ## 
 	rm -f ~/emacs ~/.emacs
@@ -129,9 +120,8 @@ nuke-emacs: clean-emacs
 	rm -rf ~/.emacs.d
 
 
-##
-## Go
-##
+# * Go
+
 export GOPATH=$(HOME)/go
 
 install-go:
@@ -141,14 +131,13 @@ install-go:
 	go get golang.org/x/tools/gopls@latest || GO111MODULE=on go get golang.org/x/tools/gopls@latest
 
 
-##
-## main
-##
+# * main
+
 
 install: install-git install-zsh install-bash install-emacs install-go ## install entire environment
 ifeq ($(OS),macosx)
 	[ -d ~/.ssh ] || mkdir -m700 .ssh
-	ln -s $(pwd)/ssh-config	~/.ssh/config
+	ln -s ../$(pwd)/ssh-config	~/.ssh/config
 endif
 	ln -s $(pwd)/dircolors	~/.dircolors
 	ln -s $(pwd)/bin	~/
