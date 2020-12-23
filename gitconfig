@@ -2,24 +2,16 @@
 	ui = true
 [alias]
 	graph = log --graph --pretty=format:'%Cred%h%Creset - %C(cyan)<%an>%Creset%C(yellow)%d%Creset %s %Cgreen(%cr)' --abbrev-commit --date=relative
-	push = "git push; git push --tags"
 	who = blame -c
-[filter "hawser"]
-	clean = git hawser clean %f
-	smudge = git hawser smudge %f
-	required = true
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	required = true
-	process = git-lfs filter-process
 [rerere]
 	enabled = true
 [fetch]
 	prune = true
 [push]
 	default = current
-
+	followTags = true
+[pull]
+	rebase = false
 [gitflow "branch"]
 	master = master
 	develop = develop
@@ -30,6 +22,5 @@
 	hotfix = hotfix/
 	support = support/
 	versiontag =
-
 [url "ssh://git@git.softiron.com:30022"]
 	insteadOf = https://git.softiron.com
