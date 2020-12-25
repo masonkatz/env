@@ -241,7 +241,7 @@
               ("C-n" . company-select-next-or-abort)
               ("C-p" . company-select-previous-or-abort))
   :config
-  (setq company-idle-delay 0.3)
+  (setq company-idle-delay 0.5)
   (global-company-mode t))
 
 (use-package company-quickhelp
@@ -249,6 +249,11 @@
   :after (company)
   :config
   (setq company-quickhelp-delay 2))
+
+(use-package company-box
+  :straight t
+  :hook
+  (company-mode . company-box-mode))
 
 ;;;; Fix Tab
 
@@ -372,7 +377,7 @@
 	lsp-ui-doc-delay 0.5
 	lsp-ui-doc-enable t
 	lsp-ui-doc-include-signature nil
-	lsp-ui-doc-position 'bottom))
+	lsp-ui-doc-position 'top))
 
 ;;;;; Yasnippet
 
@@ -417,7 +422,7 @@
 
 (use-package go-mode
   :straight t
-  :hook ((go . (lambda ()
+  :hook ((go-mode . (lambda ()
 		 (when mjk/bad-go
 		   (setq indent-tabs-mode nil))
 		 (setq tab-width 4)))
