@@ -42,7 +42,10 @@
 (when (display-graphic-p)
   (setq default-directory "~/"))
 
-;;;; Font & Ligatures
+;;;; Font, Icons & Ligatures
+
+(use-package all-the-icons
+  :straight t)
 
 (defvar mjk/resolution-font-size-alist '(((1280 800)  . 14)
 					 ((1440 900)  . 14)
@@ -62,6 +65,7 @@
       (* 10 (cdr (assoc (cddr geometry) mjk/resolution-font-size-alist)))))
 
 (when (display-graphic-p)
+  (window-divider-mode)
   (set-face-attribute 'default nil :height (mjk/font-size))
   (when (find-font (font-spec :name "JetBrains Mono"))
     (set-face-attribute 'default nil :family "JetBrains Mono")))
@@ -107,10 +111,9 @@
 
 ;;;; Modeline
 
-(use-package powerline
+(use-package doom-modeline
   :straight t
-  :init
-  (powerline-default-theme)
+  :init (doom-modeline-mode 1)
   :config
   (column-number-mode)
   (display-time-mode)
@@ -255,6 +258,25 @@
   :hook
   (company-mode . company-box-mode))
 
+;;;; Treemacs
+
+(use-package treemacs
+  :straight t)
+
+(use-package treemacs-icons-dired
+  :straight t
+  :after (treemacs dired)
+  :config
+  (treemacs-icons-dired-mode))
+
+(use-package treemacs-projectile
+  :straight t
+  :after (treemacs projectile))
+
+(use-package treemacs-magit
+  :straight t
+  :after (treemacs magit))
+  
 ;;;; Fix Tab
 
 ;; Combination of yas/company/term really messes stuff up, need to
@@ -342,7 +364,7 @@
   :custom
   (markdown-header-scaling t))
 
-;;;; Progamming
+;;;; Programming
 ;;;;; Git
 
 (use-package magit
@@ -392,8 +414,8 @@
 
 (add-hook 'prog-mode-hook
 	  '(lambda ()
-	     (when (display-graphic-p)
-	       (linum-mode 1))
+	     ;; (when (display-graphic-p)
+	     ;;   (linum-mode 1))
 	     (set (make-variable-buffer-local 'x-stretch-cursor) t)
 	     (prettify-symbols-mode)
 	     (show-paren-mode)
@@ -454,6 +476,15 @@
    (json-mode . prettier-js-mode)
    (web-mode  . prettier-js-mode)))
 
+;;;;;; Salt
+
+(use-package salt-mode
+  :straight t
+  :config
+  (add-hook 'salt-mode-hook
+            (lambda ()
+              (flyspell-mode 1))))
+
 ;;;;;; Python
 
 (use-package python-mode
@@ -483,6 +514,13 @@
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
 ;;;; Misc
+
+(use-package pomidor
+  :straight t
+  :config
+  (setq pomidor-sound-tick nil
+        pomidor-sound-tack nil))
+
 
 (use-package uniquify
   :config
@@ -518,208 +556,7 @@
  '(initial-frame-alist '((width . 128) (height . 64)))
  '(make-backup-files nil)
  '(menu-bar-mode nil)
- '(safe-local-variable-values
-   '((lsp--override-calculate-lisp-indent\? . t)
-     (flycheck-disabled-checkers quote
-				 (emacs-lisp-checkdoc))
-     (eval progn
-	   (let
-	       ((dirloc-lsp-defun-regexp
-		 (concat
-		  (concat "^\\s-*(" "lsp-defun" "\\s-+\\(")
-		  (or
-		   (bound-and-true-p lisp-mode-symbol-regexp)
-		   "\\(?:\\sw\\|\\s_\\|\\\\.\\)+")
-		  "\\)")))
-	     (add-to-list 'imenu-generic-expression
-			  (list "Functions" dirloc-lsp-defun-regexp 1)))
-	   (defvar lsp--override-calculate-lisp-indent\? nil "Whether to override `lisp-indent-function' with
-              the updated `calculate-lisp-indent' definition from
-              Emacs 28.")
-	   (defun wrap-calculate-lisp-indent
-	       (func &optional parse-start)
-	     "Return appropriate indentation for current line as Lisp code.
-In usual case returns an integer: the column to indent to.
-If the value is nil, that means don't change the indentation
-because the line starts inside a string.
-
-PARSE-START may be a buffer position to start parsing from, or a
-parse state as returned by calling `parse-partial-sexp' up to the
-beginning of the current line.
-
-The value can also be a list of the form (COLUMN CONTAINING-SEXP-START).
-This means that following lines at the same level of indentation
-should not necessarily be indented the same as this line.
-Then COLUMN is the column to indent to, and CONTAINING-SEXP-START
-is the buffer position of the start of the containing expression."
-	     (if
-		 (not lsp--override-calculate-lisp-indent\?)
-		 (funcall func parse-start)
-	       (save-excursion
-		 (beginning-of-line)
-		 (let
-		     ((indent-point
-		       (point))
-		      state
-		      (desired-indent nil)
-		      (retry t)
-		      whitespace-after-open-paren calculate-lisp-indent-last-sexp containing-sexp)
-		   (cond
-		    ((or
-		      (markerp parse-start)
-		      (integerp parse-start))
-		     (goto-char parse-start))
-		    ((null parse-start)
-		     (beginning-of-defun))
-		    (t
-		     (setq state parse-start)))
-		   (unless state
-		     (while
-			 (<
-			  (point)
-			  indent-point)
-		       (setq state
-			     (parse-partial-sexp
-			      (point)
-			      indent-point 0))))
-		   (while
-		       (and retry state
-			    (>
-			     (elt state 0)
-			     0))
-		     (setq retry nil)
-		     (setq calculate-lisp-indent-last-sexp
-			   (elt state 2))
-		     (setq containing-sexp
-			   (elt state 1))
-		     (goto-char
-		      (1+ containing-sexp))
-		     (if
-			 (and calculate-lisp-indent-last-sexp
-			      (> calculate-lisp-indent-last-sexp
-				 (point)))
-			 (let
-			     ((peek
-			       (parse-partial-sexp calculate-lisp-indent-last-sexp indent-point 0)))
-			   (if
-			       (setq retry
-				     (car
-				      (cdr peek)))
-			       (setq state peek)))))
-		   (if retry nil
-		     (goto-char
-		      (1+ containing-sexp))
-		     (setq whitespace-after-open-paren
-			   (looking-at
-			    (rx whitespace)))
-		     (if
-			 (not calculate-lisp-indent-last-sexp)
-			 (setq desired-indent
-			       (current-column))
-		       (parse-partial-sexp
-			(point)
-			calculate-lisp-indent-last-sexp 0 t)
-		       (cond
-			((looking-at "\\s("))
-			((>
-			  (save-excursion
-			    (forward-line 1)
-			    (point))
-			  calculate-lisp-indent-last-sexp)
-			 (if
-			     (or
-			      (=
-			       (point)
-			       calculate-lisp-indent-last-sexp)
-			      whitespace-after-open-paren)
-			     nil
-			   (progn
-			     (forward-sexp 1)
-			     (parse-partial-sexp
-			      (point)
-			      calculate-lisp-indent-last-sexp 0 t)))
-			 (backward-prefix-chars))
-			(t
-			 (goto-char calculate-lisp-indent-last-sexp)
-			 (beginning-of-line)
-			 (parse-partial-sexp
-			  (point)
-			  calculate-lisp-indent-last-sexp 0 t)
-			 (backward-prefix-chars)))))
-		   (let
-		       ((normal-indent
-			 (current-column)))
-		     (cond
-		      ((elt state 3)
-		       nil)
-		      ((and
-			(integerp lisp-indent-offset)
-			containing-sexp)
-		       (goto-char containing-sexp)
-		       (+
-			(current-column)
-			lisp-indent-offset))
-		      (calculate-lisp-indent-last-sexp
-		       (or
-			(and lisp-indent-function
-			     (not retry)
-			     (funcall lisp-indent-function indent-point state))
-			(and
-			 (save-excursion
-			   (goto-char indent-point)
-			   (skip-chars-forward " 	")
-			   (looking-at ":"))
-			 (save-excursion
-			   (goto-char calculate-lisp-indent-last-sexp)
-			   (backward-prefix-chars)
-			   (while
-			       (not
-				(or
-				 (looking-back "^[ 	]*\\|([ 	]+"
-					       (line-beginning-position))
-				 (and containing-sexp
-				      (>=
-				       (1+ containing-sexp)
-				       (point)))))
-			     (forward-sexp -1)
-			     (backward-prefix-chars))
-			   (setq calculate-lisp-indent-last-sexp
-				 (point)))
-			 (> calculate-lisp-indent-last-sexp
-			    (save-excursion
-			      (goto-char
-			       (1+ containing-sexp))
-			      (parse-partial-sexp
-			       (point)
-			       calculate-lisp-indent-last-sexp 0 t)
-			      (point)))
-			 (let
-			     ((parse-sexp-ignore-comments t)
-			      indent)
-			   (goto-char calculate-lisp-indent-last-sexp)
-			   (or
-			    (and
-			     (looking-at ":")
-			     (setq indent
-				   (current-column)))
-			    (and
-			     (<
-			      (line-beginning-position)
-			      (prog2
-				  (backward-sexp)
-				  (point)))
-			     (looking-at ":")
-			     (setq indent
-				   (current-column))))
-			   indent))
-			normal-indent))
-		      (desired-indent)
-		      (t normal-indent)))))))
-	   (when
-	       (< emacs-major-version 28)
-	     (advice-add #'calculate-lisp-indent :around #'wrap-calculate-lisp-indent)))
-     (eval outshine-cycle-buffer 2)
-     (eval outshine-cycle-buffer)))
+ '(safe-local-variable-values '((eval outshine-cycle-buffer 2)))
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil))
 (custom-set-faces
