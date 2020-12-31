@@ -233,7 +233,7 @@
   :init
   (projectile-mode +1)
   :bind-keymap
-  ("C-c p" . projectile-command-map))
+  ("C-c P" . projectile-command-map))
 
 
 ;;;; Company
@@ -261,7 +261,12 @@
 ;;;; Treemacs
 
 (use-package treemacs
-  :straight t)
+  :straight t
+  :bind
+  (:map global-map
+        ("C-c t" . treemacs-select-window))
+  :config
+  (setq treemacs-is-never-other-window t))
 
 (use-package treemacs-icons-dired
   :straight t
@@ -332,6 +337,15 @@
 		   (define-key eshell-mode-map "\C-p" 'eshell-previous-input)
 		   (define-key eshell-mode-map "\C-n" 'eshell-next-input))))
 
+(use-package eshell-prompt-extras
+  :straight t
+  :after (esh-mode)
+  :config
+  (with-eval-after-load "esh-opt"
+  (autoload 'epe-theme-lambda "eshell-prompt-extras")
+  (setq eshell-highlight-prompt nil
+        eshell-prompt-function 'epe-theme-lambda)))
+
 (defun mjk/ansi-term ()
   "Create or visit a terminal buffer."
   (interactive)
@@ -346,16 +360,10 @@
       (eshell)
     (switch-to-buffer "*eshell*")))
 
-(global-set-key [f1]  'mjk/ansi-term)
-(global-set-key [f2]  'mjk/eshell)
+(global-set-key (kbd "C-c S")  'mjk/ansi-term)
+(global-set-key (kbd "C-c s")  'mjk/eshell)
 
 ;;;; Writing
-;;;;; Flycheck
-
-(use-package flycheck
-  :straight t
-  :config
-  (global-flycheck-mode))
 
 ;;;;; Markdown
 
@@ -365,6 +373,12 @@
   (markdown-header-scaling t))
 
 ;;;; Programming
+
+(global-set-key (kbd "C-c c")  'compile)
+(global-set-key (kbd "C-c n")  'next-error)
+(global-set-key (kbd "C-c p")  'previous-error)
+
+
 ;;;;; Git
 
 (use-package magit
@@ -376,18 +390,18 @@
   :after magit
   :hook (magit-mode-hook . turn-on-magit-gitflow))
 
-;;;;; LSP
+;;;;; LSP / Flycheck
+
+(use-package flycheck
+  :straight t
+  :config
+  (global-flycheck-mode))
 
 (use-package lsp-mode
   :straight t
-  :hook (go-mode . lsp-deferred)
-  :config
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-tramp-connection "gopls")
-		    :major-modes '(go-mode)
-		    :remote? t
-                    :server-id 'gopls-remote)))
-
+  :hook
+  (go-mode . lsp-deferred)
+  (c-mode  . lsp-deferred))
 
 (use-package lsp-ui
   :straight t
@@ -400,6 +414,13 @@
 	lsp-ui-doc-enable t
 	lsp-ui-doc-include-signature nil
 	lsp-ui-doc-position 'top))
+
+(when (string= system-type 'darwin)
+  (use-package lsp-sourcekit
+    :straight t
+    :after (lsp-mode)
+    :config
+    (setq lsp-sourcekit-executable "/Library/Developer/CommandLineTools/usr/bin/sourcekit-lsp")))
 
 ;;;;; Yasnippet
 
@@ -444,10 +465,12 @@
 
 (use-package go-mode
   :straight t
+  :after (lsp-mode)
   :hook ((go-mode . (lambda ()
 		 (when mjk/bad-go
-		   (setq indent-tabs-mode nil))
-		 (setq tab-width 4)))
+		   (setq indent-tabs-mode nil)
+		   (setq tab-width 4))
+		 (flycheck-add-next-checker 'lsp '(warning . go-golint))))
 	 (before-save . (lambda ()
 			  (when (not mjk/bad-go)
 			    (gofmt-before-save)))))
@@ -564,6 +587,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(linum ((t (:height 0.75)))))
+ '(linum ((t (:height 0.75))))
+ '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline t :weight bold)))))
 
 
