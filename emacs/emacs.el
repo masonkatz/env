@@ -101,6 +101,7 @@
 				       "#!"
 				       "/>" "</>"
 				       "<!--" "-->"
+				       "<-"
 				       ".." "..."
 				       "::"
 				       ":="
@@ -454,7 +455,8 @@
   :hook
   (c-mode . (lambda ()
 	      (setq c-basic-offset 4
-		    tab-width 4))))
+		    tab-width 4)
+	      (flycheck-add-next-checker 'lsp '(warning . c/c++-cppcheck)))))
 
 ;;;;;; Go
 
@@ -499,14 +501,10 @@
    (json-mode . prettier-js-mode)
    (web-mode  . prettier-js-mode)))
 
-;;;;;; Salt
+;;;;;; Make
 
-(use-package salt-mode
-  :straight t
-  :config
-  (add-hook 'salt-mode-hook
-            (lambda ()
-              (flyspell-mode 1))))
+(add-to-list 'auto-mode-alist '("[Mm]akefile\\'" . makefile-gmake-mode))
+(add-to-list 'auto-mode-alist '("\\.mk\\'" . makefile-gmake-mode))
 
 ;;;;;; Python
 
@@ -520,6 +518,15 @@
 			       py-indent-paren-spanned-multilines-p nil
 			       py-closing-list-dedents-bos nil))))
 
+;;;;;; Salt
+
+(use-package salt-mode
+  :straight t
+  :config
+  (add-hook 'salt-mode-hook
+            (lambda ()
+              (flyspell-mode 1))))
+
 ;;;;;; Shell
 
 (add-hook 'sh-mode-hook
@@ -528,6 +535,11 @@
 		   sh-indentation  8
 		   sh-indent-for-case-label 0
 		   sh-indent-for-case-alt '+)))
+
+(add-hook 'eshell-mode-hook
+          '(lambda ()
+             (setenv "PAGER" "cat")
+             (setenv "EDITOR" "emacsclient")))
 
 ;;;;;; Yaml
 
@@ -560,7 +572,15 @@
  ;; If there is more than one, they won't work right.
  '(display-time-load-average-threshold 10)
  '(display-time-mail-string "")
- '(display-time-world-list
+ '(global-auto-revert-mode t)
+ '(inhibit-startup-screen t)
+ '(initial-frame-alist '((width . 128) (height . 64)))
+ '(make-backup-files nil)
+ '(menu-bar-mode nil)
+ '(safe-local-variable-values '((eval outshine-cycle-buffer 2)))
+ '(scroll-bar-mode nil)
+ '(tool-bar-mode nil)
+ '(world-clock-list
    '(("America/Los_Angeles" "San Diego")
      ("America/Phoenix" "Tucson")
      ("America/Denver" "Santa Fe")
@@ -573,20 +593,13 @@
      ("Asia/Calcutta" "Bangalore")
      ("Australia/Perth" "Perth")
      ("Asia/Tokyo" "Tokyo")))
- '(display-time-world-time-format "%a %b %d%t%I:%M %p%t%Z")
- '(global-auto-revert-mode t)
- '(inhibit-startup-screen t)
- '(initial-frame-alist '((width . 128) (height . 64)))
- '(make-backup-files nil)
- '(menu-bar-mode nil)
- '(safe-local-variable-values '((eval outshine-cycle-buffer 2)))
- '(scroll-bar-mode nil)
- '(tool-bar-mode nil))
+ '(world-clock-time-format "%a %b %d%t%I:%M %p%t%Z"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(font-lock-keyword-face ((t (:slant italic :weight normal))))
  '(linum ((t (:height 0.75))))
  '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline t :weight bold)))))
 
