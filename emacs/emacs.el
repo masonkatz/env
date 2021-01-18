@@ -66,6 +66,8 @@
 
 (when (display-graphic-p)
   (window-divider-mode)
+  (setq window-divider-default-right-width 3
+	window-divider-default-bottom-width 3)
   (set-face-attribute 'default nil :height (mjk/font-size))
   (when (find-font (font-spec :name "JetBrains Mono"))
     (set-face-attribute 'default nil :family "JetBrains Mono")))
@@ -116,13 +118,30 @@
   :straight t
   :init (doom-modeline-mode 1)
   :config
+  (setq doom-modeline-project-detection 'projectile
+	doom-modeline-buffer-encoding nil
+	doom-modeline-indent-info t)
   (column-number-mode)
   (display-time-mode)
   (size-indication-mode))
 
+(use-package auto-dim-other-buffers
+  :straight t
+  :config
+  (when (display-graphic-p)
+    (add-hook 'after-init-hook (lambda ()
+				 (when (fboundp 'auto-dim-other-buffers-mode)
+				   (auto-dim-other-buffers-mode t))))))
+
 ;;;; Dark/Light Modes
 
-(use-package zenburn-theme :straight t)
+(use-package zenburn-theme
+  :straight t
+  :init
+  (setq zenburn-use-variable-pitch t
+	zenburn-scale-org-headlines t
+	zenburn-scale-outline-headlines t))
+
 (use-package solarized-theme :straight t)
 
 (defvar mjk/dark-mode-p nil
@@ -300,6 +319,7 @@
   (let ((yas/fallback-behavior 'return-nil))
     (yas/expand)))
 
+;; (setq tab-always-indent 'complete)
 (defun mjk/tab ()
   "Tab for all modes."
   (interactive)
@@ -438,6 +458,9 @@
 	  '(lambda ()
 	     ;; (when (display-graphic-p)
 	     ;;   (linum-mode 1))
+	     (setq display-fill-column-indicator-column 80)
+	     (hl-line-mode)
+	     (display-fill-column-indicator-mode)
 	     (set (make-variable-buffer-local 'x-stretch-cursor) t)
 	     (prettify-symbols-mode)
 	     (show-paren-mode)
@@ -600,6 +623,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(font-lock-keyword-face ((t (:slant italic :weight normal))))
+ '(fringe ((t (:inherit default :foreground "#DCDCCC"))))
  '(linum ((t (:height 0.75))))
  '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline t :weight bold)))))
 
