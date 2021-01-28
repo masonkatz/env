@@ -39,13 +39,24 @@
   (when (display-graphic-p)
     (exec-path-from-shell-initialize)))
 
+
 (when (display-graphic-p)
   (setq default-directory "~/"))
+
+(when (memq window-system '(mac ns))
+  (unbind-key "s-t")
+  (unbind-key "s-,"))
 
 ;;;; Font, Icons & Ligatures
 
 (use-package all-the-icons
   :straight t)
+
+(use-package all-the-icons-dired
+  :straight t
+  :after all-the-icons
+  :hook
+  (dired-mode . all-the-icons-dired-mode))
 
 (defvar mjk/resolution-font-size-alist '(((1280 800)  . 14)
 					 ((1440 900)  . 14)
@@ -116,22 +127,22 @@
   :straight t
   :init (doom-modeline-mode 1)
   :config
-  (column-number-mode)
-  (display-time-mode)
+  (setq doom-modeline-project-detection 'projectile
+	doom-modeline-buffer-encoding nil
+	doom-modeline-indent-info t)
   (size-indication-mode))
 
-;;;; Dark/Light Modes
+(setq linum-format "%5d")
 
-(use-package zenburn-theme :straight t)
-(use-package solarized-theme :straight t)
+;;;; Dark/Light Modes
 
 (defvar mjk/dark-mode-p nil
   "Are we dark or light.")
 
-(defvar mjk/dark-theme 'zenburn
+(defvar mjk/dark-theme 'doom-zenburn
   "Dark mode theme.")
 
-(defvar mjk/light-theme 'solarized-light
+(defvar mjk/light-theme 'doom-solarized-light
   "Light mode theme - used for printing.")
 
 (defun mjk/dark-mode ()
@@ -144,20 +155,33 @@
 (defun mjk/force-dark-mode ()
   "Force dark mode."
   (when (not (string= mjk/dark-mode-p t))
-    (when (not (custom-theme-p mjk/dark-theme))
-      (load-theme mjk/dark-theme t))
-    (disable-theme mjk/light-theme)
-    (enable-theme mjk/dark-theme)
+    (when (custom-theme-p mjk/light-theme)
+      (disable-theme mjk/light-theme))
+    (load-theme mjk/dark-theme t)
     (setq mjk/dark-mode-p t)))
 
 (defun mjk/force-light-mode ()
   "Force light mode."
   (when (string= mjk/dark-mode-p t)
-    (when (not (custom-theme-p mjk/light-theme))
-      (load-theme mjk/light-theme t))
-    (disable-theme mjk/dark-theme)
-    (enable-theme mjk/light-theme)
+    (when (custom-theme-p mjk/dark-theme)
+      (disable-theme mjk/dark-theme))
+    (load-theme mjk/light-theme t)
     (setq mjk/dark-mode-p nil)))
+
+(global-set-key (kbd "C-c d")  'mjk/dark-mode)
+
+(use-package doom-themes
+  :straight t
+  :custom
+  (doom-zenburn-brighter-modeline t)
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-italic t)
+;  (doom-themes-treemacs-theme "doom-colors")
+  :config
+  (doom-themes-visual-bell-config)
+;  (doom-themes-treemacs-config)
+  (doom-themes-org-config))
+
 
 (mjk/dark-mode) ;; do it
 
@@ -183,12 +207,49 @@
 
 ;;;; Outlining
 
+(defun mjk/org-capture-cond (s)
+  "Used by org-capture-templates to only include a line for S if non nil."
+  (if (= 0 (length s))
+      nil
+    "  %s\n" s))
+
 (use-package outshine
   :straight t
-  :bind (:map outshine-mode-map
-	      ("<tab>" . outshine-kbd-TAB))
+  :bind (:map outshine-mode-map ("<tab>" . outshine-kbd-TAB))
   :hook
   (prog-mode . outshine-mode))
+
+(use-package org
+  :bind
+  (:map global-map ("C-c o" . org-capture))
+  :config
+  (when (string= system-type 'darwin)	; has icloud
+    (setq org-directory "~/Documents/Org"))
+  (setq org-capture-templates
+	'(("t" "Todo" entry (file+headline "Tasks.org" "Backlog")
+           "* TODO %?\n%(mjk/org-capture-cond \"%i\")  %u"))))
+
+(use-package org-superstar
+  :straight t
+  :after (org)
+  :hook
+  (org-mode . (lambda ()
+		(org-superstar-mode 1)
+		(push '("[ ]" . "☐") prettify-symbols-alist)
+		(push '("[X]" . "☑") prettify-symbols-alist)
+		(push '("[-]" . "❍") prettify-symbols-alist)
+		(prettify-symbols-mode))))
+
+(use-package org-projectile
+  :straight t
+  :after (org)
+  :config
+  (if (string= system-type 'darwin)	; has icloud
+      (setq org-projectile-projects-file "~/Documents/Org/Projects.org")
+    (org-projectile-per-project))
+  (setq org-projectile-capture-template "* TODO %?\n%(mjk/org-capture-cond \"%i\")  %u\n  %a"
+	org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
+  (push (org-projectile-project-todo-entry) org-capture-templates))
 
 ;;;; Which Key
 
@@ -201,11 +262,12 @@
 
 (use-package helm
   :straight t
+  :after (helm-icons)
   :bind
   (([remap find-file] . helm-find-files)
    ([remap execute-extended-command] . helm-M-x)
    ([remap list-buffers] . helm-buffers-list)
-   ("C-x b"              . helm-buffers-list))
+   ([remap switch-to-buffer] . helm-buffers-list))
   :config
   (helm-mode 1))
 
@@ -227,6 +289,11 @@
   :straight t
   :after (helm company))
 
+(use-package helm-icons
+  :straight t
+  :config
+  (helm-icons-enable))
+
 ;;;; Projectile
 
 (use-package projectile
@@ -235,7 +302,6 @@
   (projectile-mode +1)
   :bind-keymap
   ("C-c P" . projectile-command-map))
-
 
 ;;;; Company
 
@@ -313,7 +379,8 @@
               (company-complete-common)
             (indent-for-tab-command))))))
 
-(global-set-key [tab] 'mjk/tab)
+(setq tab-always-indent 'complete)
+;;(global-set-key [tab] 'mjk/tab)
 
 ;;;; System Administration
 ;;;;; Docker
@@ -336,7 +403,12 @@
   :hook
   (eshell-mode . (lambda ()
 		   (define-key eshell-mode-map "\C-p" 'eshell-previous-input)
-		   (define-key eshell-mode-map "\C-n" 'eshell-next-input))))
+		   (define-key eshell-mode-map "\C-n" 'eshell-next-input)
+		   (setenv "PAGER" "cat")
+		   (setenv "EDITOR" "emacsclient")
+		   (eshell/alias "ls" "ls -F")
+		   (when (file-directory-p "/opt/softiron/share/build")
+		     (setenv "SI_BUILD" "/opt/softiron/share/build")))))
 
 (use-package eshell-prompt-extras
   :straight t
@@ -361,8 +433,8 @@
       (eshell)
     (switch-to-buffer "*eshell*")))
 
-(global-set-key (kbd "C-c S")  'mjk/ansi-term)
-(global-set-key (kbd "C-c s")  'mjk/eshell)
+(global-set-key (kbd "C-c s")  'mjk/ansi-term)
+(global-set-key (kbd "C-c e")  'mjk/eshell)
 
 ;;;; Writing
 
@@ -378,7 +450,6 @@
 (global-set-key (kbd "C-c c")  'compile)
 (global-set-key (kbd "C-c n")  'next-error)
 (global-set-key (kbd "C-c p")  'previous-error)
-
 
 ;;;;; Git
 
@@ -399,10 +470,7 @@
   (global-flycheck-mode))
 
 (use-package lsp-mode
-  :straight t
-  :hook
-  (go-mode . lsp-deferred)
-  (c-mode  . lsp-deferred))
+  :straight t)
 
 (use-package lsp-ui
   :straight t
@@ -434,11 +502,18 @@
 ;;;;; Languages
 ;;;;;; all
 
+(use-package rainbow-mode
+  :straight t)
+
 (add-hook 'prog-mode-hook
 	  '(lambda ()
-	     ;; (when (display-graphic-p)
-	     ;;   (linum-mode 1))
-	     (set (make-variable-buffer-local 'x-stretch-cursor) t)
+	     (when (display-graphic-p)
+	       (setq linum-format "%5d"
+		     display-fill-column-indicator-column 80)
+	       (linum-mode 1)
+	       (display-fill-column-indicator-mode)
+	       (hl-line-mode)
+	       (set (make-variable-buffer-local 'x-stretch-cursor) t))
 	     (prettify-symbols-mode)
 	     (show-paren-mode)
 	     (electric-pair-mode 1)
@@ -456,28 +531,44 @@
   (c-mode . (lambda ()
 	      (setq c-basic-offset 4
 		    tab-width 4)
+	      (lsp-deferred)
 	      (flycheck-add-next-checker 'lsp '(warning . c/c++-cppcheck)))))
 
 ;;;;;; Go
 
-(defvar mjk/bad-go (if (getenv "BADGO")
-		     't
-		   nil)
-  "Use non-standard Go conventions.")
+(defvar mjk/gosht-p nil
+  "Are we standard or non-standard Go. Default is standard (nil).")
+
+(defun mjk/gosht (&optional force)
+  "Toggle Go style from standard to non-standard, unless FORCE is true."
+  (interactive)
+  (when (string= force 't)
+    (setq mjk/gosht-p 't))
+  (if (string= mjk/gosht-p 't)
+      (setq mjk/gosht-p nil)
+    (setq mjk/gosht-p 't))
+  (mjk/go-setup))
+
+(defun mjk/go-setup ()
+  "Setup Go style."
+  (if (string= mjk/gosht-p 't)
+      (setq indent-tabs-mode nil
+	    tabs-width 4)
+    (setq indent-tabs-mode 't
+	  tab-width 4)))
 
 (use-package go-mode
   :straight t
   :after (lsp-mode)
   :hook ((go-mode . (lambda ()
-		 (when mjk/bad-go
-		   (setq indent-tabs-mode nil)
-		   (setq tab-width 4))
-		 (flycheck-add-next-checker 'lsp '(warning . go-golint))))
+		      (mjk/go-setup)
+		      (setq gofmt-command "goimports")
+		      (lsp-deferred)
+		      (flycheck-add-next-checker 'lsp '(warning . go-golint))))
 	 (before-save . (lambda ()
-			  (when (not mjk/bad-go)
-			    (gofmt-before-save)))))
-  :config
-  (setq gofmt-command "goimports"))
+			  (when (not (string= mjk/gosht-p 't))
+			    (gofmt-before-save))))))
+
 
 ;;;;;; Javascript
 
@@ -536,10 +627,6 @@
 		   sh-indent-for-case-label 0
 		   sh-indent-for-case-alt '+)))
 
-(add-hook 'eshell-mode-hook
-          '(lambda ()
-             (setenv "PAGER" "cat")
-             (setenv "EDITOR" "emacsclient")))
 
 ;;;;;; Yaml
 
@@ -549,6 +636,27 @@
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
 ;;;; Misc
+
+(use-package dimmer
+  :straight t
+  :custom
+  (dimmer-fraction 0.1)
+  :config
+  (dimmer-mode)
+  (dimmer-configure-which-key)
+  (dimmer-configure-helm)
+  (dimmer-configure-magit)
+  (dimmer-configure-company-box))
+
+(use-package ace-window
+  :straight t
+  :config
+  (global-set-key [remap other-window] 'ace-window))
+
+(use-package rainbow-delimiters
+  :straight t
+  :config
+  (global-set-key (kbd "C-c r") 'rainbow-delimiters-mode))
 
 (use-package pomidor
   :straight t
@@ -574,12 +682,13 @@
  '(display-time-mail-string "")
  '(global-auto-revert-mode t)
  '(inhibit-startup-screen t)
- '(initial-frame-alist '((width . 128) (height . 64)))
  '(make-backup-files nil)
  '(menu-bar-mode nil)
  '(safe-local-variable-values '((eval outshine-cycle-buffer 2)))
  '(scroll-bar-mode nil)
+ '(sentence-end-double-space nil)
  '(tool-bar-mode nil)
+ '(warning-suppress-types '((org)))
  '(world-clock-list
    '(("America/Los_Angeles" "San Diego")
      ("America/Phoenix" "Tucson")
@@ -599,8 +708,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(aw-leading-char-face ((t (:foreground "red" :height 4.0))))
  '(font-lock-keyword-face ((t (:slant italic :weight normal))))
  '(linum ((t (:height 0.75))))
  '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline t :weight bold)))))
+
 
 

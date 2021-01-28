@@ -31,7 +31,6 @@ DEFAULT_USER=`whoami`
 
 source $ZSH/oh-my-zsh.sh
 
-
 # Do this after zsh setup to fix the ls aliases
 
 case $TERM in
