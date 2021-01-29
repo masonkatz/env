@@ -453,6 +453,9 @@
 
 ;;;;; Git
 
+(use-package git-gutter-fringe
+  :straight t)
+
 (use-package magit
   :straight t
   :bind (("C-x g" . magit-status)))
@@ -513,6 +516,8 @@
 	       (linum-mode 1)
 	       (display-fill-column-indicator-mode)
 	       (hl-line-mode)
+	       (git-gutter-mode)
+	       (highlight-indent-guides)
 	       (set (make-variable-buffer-local 'x-stretch-cursor) t))
 	     (prettify-symbols-mode)
 	     (show-paren-mode)
@@ -636,6 +641,13 @@
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
 ;;;; Misc
+
+
+(use-package highlight-indent-guides
+  :straight t
+  :custom
+  (highlight-indent-guides-method 'bitmap)
+  (highlight-indent-guides-responsive "top"))
 
 (use-package dimmer
   :straight t
