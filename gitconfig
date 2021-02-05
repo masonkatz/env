@@ -1,5 +1,7 @@
 [color]
 	ui = true
+[column]
+	ui = auto
 [alias]
 	graph = log --graph --pretty=format:'%Cred%h%Creset - %C(cyan)<%an>%Creset%C(yellow)%d%Creset %s %Cgreen(%cr)' --abbrev-commit --date=relative
 	who = blame -c
@@ -12,6 +14,8 @@
 	followTags = true
 [pull]
 	rebase = false
+[merge]
+	conflictstyle = diff3
 [gitflow "branch"]
 	master = master
 	develop = develop

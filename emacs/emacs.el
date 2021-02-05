@@ -77,49 +77,7 @@
 
 (when (display-graphic-p)
   (window-divider-mode)
-  (set-face-attribute 'default nil :height (mjk/font-size))
-  (when (find-font (font-spec :name "JetBrains Mono"))
-    (set-face-attribute 'default nil :family "JetBrains Mono")))
-
-;; ligatures -- full set from JetBrains -- pick your favorite
-;;
-;; "--" "---" "==" "===" "!=" "!==" "=!=" "=:=" "=/="
-;; "<=" ">=" "&&" "&&&" "&=" "++" "+++" "***" ";;"
-;; "!!" "??" "?:" "?." "?=" "<:" ":<" ":>" ">:"
-;; "<>" "<<<" ">>>" "<<" ">>" "||" "-|" "_|_" "|-"
-;; "||-" "|=" "||=" "##" "###" "####" "#{" "#[" "]#"
-;; "#(" "#?" "#_" "#_(" "#:" "#!" "#=" "^=" "<$>"
-;; "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</"
-;; "</>" "/>" "<!--" "<#--" "-->" "->" "->>" "<<-"
-;; "<-" "<=<" "=<<" "<<=" "<==" "<=>" "<==>" "==>"
-;; "=>" "=>>" ">=>" ">>=" ">>-" ">-" ">--" "-<" "-<<"
-;; ">->" "<-<" "<-|" "<=|" "|=>" "|->" "<->" "<~~"
-;; "<~" "<~>" "~~" "~~>" "~>" "~-" "-~" "~@"
-;; "[||]" "|]" "[|" "|}" "{|" "[<" ">]" "|>" "<|"
-;; "||>" "<||" "|||>" "<|||" "<|>" "..." ".." ".="
-;; ".-" "..<" ".?" "::" ":::" ":=" "::=" ":?" ":?>"
-
-(use-package ligature
-  :straight
-  (ligatures :type git :host github :repo "mickeynp/ligature.el")
-  :config
-  (ligature-set-ligatures 'prog-mode '("--" "++"
-				       "==" "!="
-				       "<=" ">="
-				       "&&" "&="
-				       "||" "|="
-				       "##" "###" "####"
-				       "#!"
-				       "/>" "</>"
-				       "<!--" "-->"
-				       "<-"
-				       ".." "..."
-				       "::"
-				       ":="
-				       "//"
-				       "/*" "***" "*/"))
-  :hook
-  (prog-mode . ligature-mode))
+  (set-face-attribute 'default nil :height (mjk/font-size)))
 
 ;;;; Modeline
 
@@ -132,7 +90,6 @@
 	doom-modeline-indent-info t)
   (size-indication-mode))
 
-(setq linum-format "%5d")
 
 ;;;; Dark/Light Modes
 
@@ -268,6 +225,10 @@
    ([remap execute-extended-command] . helm-M-x)
    ([remap list-buffers] . helm-buffers-list)
    ([remap switch-to-buffer] . helm-buffers-list))
+  (:map helm-map
+	;; swap defaults for tab key muscle memory
+	("<tab>" . 'helm-execute-persistent-action)
+	("C-z" . 'helm-select-action))
   :config
   (helm-mode 1))
 
@@ -511,13 +472,13 @@
 (add-hook 'prog-mode-hook
 	  '(lambda ()
 	     (when (display-graphic-p)
-	       (setq linum-format "%5d"
+	       (setq linum-format "%5d "
 		     display-fill-column-indicator-column 80)
 	       (linum-mode 1)
 	       (display-fill-column-indicator-mode)
 	       (hl-line-mode)
 	       (git-gutter-mode)
-	       (highlight-indent-guides)
+	       (highlight-indent-guides-mode)
 	       (set (make-variable-buffer-local 'x-stretch-cursor) t))
 	     (prettify-symbols-mode)
 	     (show-paren-mode)
@@ -526,6 +487,12 @@
 	     (font-lock-mode)
 	     (flyspell-prog-mode)
 	     (yas-minor-mode)))
+
+;;;;;; ELisp
+
+(add-hook 'emacs-lisp-mode-hook
+	  '(lambda ()
+	     (rainbow-delimiters-mode)))
 
 ;;;;;; C/C++
 
