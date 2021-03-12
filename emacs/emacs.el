@@ -219,7 +219,6 @@
 
 (use-package helm
   :straight t
-  :after (helm-icons)
   :bind
   (([remap find-file] . helm-find-files)
    ([remap execute-extended-command] . helm-M-x)
@@ -250,10 +249,10 @@
   :straight t
   :after (helm company))
 
-(use-package helm-icons
-  :straight t
-  :config
-  (helm-icons-enable))
+;(use-package helm-icons
+;  :straight t
+;  :config
+;  (helm-icons-enable))
 
 ;;;; Projectile
 
@@ -463,7 +462,7 @@
 (use-package yasnippet-snippets
   :straight t)
 
-;;;;; Languages
+
 ;;;;;; all
 
 (use-package rainbow-mode
@@ -527,14 +526,15 @@
       (setq indent-tabs-mode nil
 	    tabs-width 4)
     (setq indent-tabs-mode 't
-	  tab-width 4)))
+	  tab-width 8)))
 
 (use-package go-mode
   :straight t
   :after (lsp-mode)
   :hook ((go-mode . (lambda ()
 		      (mjk/go-setup)
-		      (setq gofmt-command "goimports")
+		      (setq gofmt-command "goimports"
+			    display-fill-column-indicator-column 120)
 		      (lsp-deferred)
 		      (flycheck-add-next-checker 'lsp '(warning . go-golint))))
 	 (before-save . (lambda ()
@@ -573,13 +573,11 @@
 
 (use-package python-mode
   :straight t
-  :hook (python-mode . (lambda ()
-			 (setq tab-width 8
-			       python-indent 8
-			       py-indent-tabs-mode t
-			       py-indent-offset 8
-			       py-indent-paren-spanned-multilines-p nil
-			       py-closing-list-dedents-bos nil))))
+  :custom
+  (py-empty-line-closes-p t)
+  (py-use-font-lock-doc-face-p t)
+  (py-auto-complete-p t)
+  (py-tab-shifts-region-p t))
 
 ;;;;;; Salt
 
@@ -667,7 +665,7 @@
  '(scroll-bar-mode nil)
  '(sentence-end-double-space nil)
  '(tool-bar-mode nil)
- '(warning-suppress-types '((org)))
+ '(warning-suppress-types '((use-package) (org)))
  '(world-clock-list
    '(("America/Los_Angeles" "San Diego")
      ("America/Phoenix" "Tucson")
