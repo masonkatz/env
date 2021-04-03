@@ -178,7 +178,7 @@
 
 (use-package org
   :bind
-  (:map global-map ("C-c o" . org-capture))
+  (:map global-map ("C-c k" . org-capture))
   :config
   (when (string= system-type 'darwin)	; has icloud
     (setq org-directory "~/Documents/Org"))
@@ -356,8 +356,9 @@
 (use-package term
   :demand t				; force load to get the keymap
   :bind (:map term-raw-map
-	      ("C-c C-y" . term-paste)
-	      ("M-x" . nil)))		; M-x works as normal
+	      ("C-c" . nil)
+	      ("M-x" . nil)
+	      ("C-x C-y" . term-paste)))
 
 (use-package esh-mode
   :hook
@@ -423,6 +424,9 @@
 (global-set-key (kbd "C-c c")  'compile)
 (global-set-key (kbd "C-c n")  'next-error)
 (global-set-key (kbd "C-c p")  'previous-error)
+
+;;(global-set-key (kbd "s-n") 'forward-list)
+;;(global-set-key (kbd "s-p") 'backward-list)
 
 ;;;;; Git
 
@@ -501,6 +505,7 @@
 	     (yas-minor-mode)))
 
 ;;;;;; ELisp
+
 
 (add-hook 'emacs-lisp-mode-hook
 	  '(lambda ()
@@ -584,13 +589,22 @@
 
 ;;;;;; Python
 
+(use-package jedi
+  :straight t)
+
+(use-package python-black
+  :straight t
+  :after python)
+
 (use-package python-mode
   :straight t
   :custom
   (py-empty-line-closes-p t)
   (py-use-font-lock-doc-face-p t)
   (py-auto-complete-p t)
-  (py-tab-shifts-region-p t))
+  (py-tab-shifts-region-p t)
+  :hook ((python-mode . (lambda ()
+			  (python-black-on-save-mode)))))
 
 ;;;;;; Salt
 
@@ -641,7 +655,9 @@
 (use-package ace-window
   :straight t
   :config
-  (global-set-key [remap other-window] 'ace-window))
+  (global-set-key [remap other-window] 'ace-window)
+  (global-set-key (kbd "C-c o") 'ace-swap-window))
+
 
 (use-package rainbow-delimiters
   :straight t
