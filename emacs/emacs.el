@@ -425,8 +425,19 @@
 (global-set-key (kbd "C-c n")  'next-error)
 (global-set-key (kbd "C-c p")  'previous-error)
 
-;;(global-set-key (kbd "s-n") 'forward-list)
-;;(global-set-key (kbd "s-p") 'backward-list)
+(defun mjk/next-open-brace ()
+  (interactive)
+  (skip-chars-forward "^{")
+  (forward-char))
+
+(defun mjk/next-close-brace ()
+  (interactive)
+  (skip-chars-forward "^}")
+  (forward-char))
+
+(global-set-key (kbd "C-c {") 'mjk/next-open-brace)
+(global-set-key (kbd "C-c }") 'mjk/next-close-brace)
+
 
 ;;;;; Git
 
