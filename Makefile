@@ -129,7 +129,6 @@ install-go:
 		go get -u golang.org/x/lint/golint; \
 		go get -u golang.org/x/tools/cmd/goimports; \
 		go get -u github.com/nsf/gocode; \
-		go get golang.org/x/tools/gopls@latest || GO111MODULE=on go get golang.org/x/tools/gopls@latest; \
 	fi
 
 
