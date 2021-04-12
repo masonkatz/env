@@ -1,3 +1,4 @@
+
 ;;; emacs.el --- top level config -*- eval: (outshine-cycle-buffer 2) -*-
 ;;; Commentary:
 ;;
@@ -346,6 +347,9 @@
 ;;;;; Docker
 
 (use-package docker
+  :straight t)
+
+(use-package dockerfile-mode
   :straight t)
 
 ;;;;; Terminal
