@@ -13,9 +13,10 @@ fi
 export GOPATH=~/go
 PATH=$PATH:$GOPATH/bin
 
-if [ -d /opt/softiron/share/build ]; then
-	export SI_BUILD=/opt/softiron/build
+if [ -d /opt/softiron/build/rules ]; then
+	export SI_BUILD=/opt/softiron/build/rules
 fi
+
 
 
 

@@ -1,3 +1,7 @@
+[commit]
+	template = ~/env/git-template
+[core]
+	pager = less -FX
 [color]
 	ui = true
 [column]

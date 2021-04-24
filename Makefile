@@ -10,7 +10,7 @@ pwd  := $(shell echo $(PWD) | sed 's/$(home)//g')
 .PHONY: help
 help:
 	@echo "Usage: make [SITE=personal|softiron|kassette] [target]"
-	@grep -oh -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | \
+	@grep -oh -E '^[a-zA-Z_-]+:.*?##.*$$' Makefile | sort | \
 	awk 'BEGIN {FS = ":.*?## "}; {printf "%-16s  %s\n", $$1, $$2}'
 
 default:
@@ -18,7 +18,7 @@ default:
 
 # * Git
 
-install-git: ~/.gitconfig ##
+install-git: ~/.gitconfig ## 
 
 clean-git: ## 
 	rm -f ~/.gitconfig

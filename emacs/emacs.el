@@ -86,7 +86,6 @@
   :init (doom-modeline-mode 1)
   :config
   (setq doom-modeline-project-detection 'projectile
-	doom-modeline-buffer-encoding nil
 	doom-modeline-indent-info t)
   (size-indication-mode))
 
@@ -151,15 +150,12 @@
 	(ps-line-number t)
 	(ps-landscape-mode t)
 	(ps-number-of-columns 1)
-	(ligatures ligature-mode)
 	(pretty prettify-symbols-mode)
 	(dark mjk/dark-mode-p))
     (when pretty (prettify-symbols-mode))
-    (when ligatures (ligature-mode))
     (mjk/force-light-mode)
     (ps-print-buffer-with-faces)
     (when dark (mjk/force-dark-mode))
-    (when ligatures (ligature-mode))
     (when pretty (prettify-symbols-mode))))
 
 ;;;; Outlining
@@ -254,6 +250,13 @@
 ;  :config
 ;  (helm-icons-enable))
 
+;;;; God
+
+(use-package god-mode
+  :straight t)
+
+(define-key esc-map (kbd "<escape>") 'god-local-mode)
+
 ;;;; Projectile
 
 (use-package projectile
@@ -262,6 +265,14 @@
   (projectile-mode +1)
   :bind-keymap
   ("C-c P" . projectile-command-map))
+
+(defun mjk/compile (arg)
+  (interactive "P")
+  (if (projectile-project-root)
+      (projectile-compile-project arg)
+    (compile arg)))
+
+(global-set-key (kbd "C-c c")  'mjk/compile)
 
 ;;;; Company
 
@@ -421,7 +432,6 @@
           ("NOTE"       success bold)
           ("DEPRECATED" font-lock-doc-face bold))))
 
-(global-set-key (kbd "C-c c")  'compile)
 (global-set-key (kbd "C-c n")  'next-error)
 (global-set-key (kbd "C-c p")  'previous-error)
 
@@ -435,8 +445,20 @@
   (skip-chars-forward "^}")
   (forward-char))
 
-(global-set-key (kbd "C-c {") 'mjk/next-open-brace)
-(global-set-key (kbd "C-c }") 'mjk/next-close-brace)
+(defun mjk/prev-open-brace ()
+  (interactive)
+  (skip-chars-backward "^{")
+  (backward-char))
+
+(defun mjk/prev-close-brace ()
+  (interactive)
+  (skip-chars-backward "^}")
+  (backward-char))
+
+(global-set-key (kbd "C-c [") 'mjk/next-open-brace)
+(global-set-key (kbd "C-c ]") 'mjk/next-close-brace)
+(global-set-key (kbd "C-c {") 'mjk/prev-open-brace)
+(global-set-key (kbd "C-c }") 'mjk/prev-close-brace)
 
 
 ;;;;; Git
@@ -695,13 +717,17 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(compilation-scroll-output t)
  '(display-time-load-average-threshold 10)
  '(display-time-mail-string "")
  '(global-auto-revert-mode t)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(menu-bar-mode nil)
- '(safe-local-variable-values '((eval outshine-cycle-buffer 2)))
+ '(safe-local-variable-values
+   '((checkdoc-minor-mode . t)
+     (checkdoc-package-keywords-flag)
+     (eval outshine-cycle-buffer 2)))
  '(scroll-bar-mode nil)
  '(sentence-end-double-space nil)
  '(tool-bar-mode nil)
