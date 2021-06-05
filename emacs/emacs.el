@@ -489,6 +489,7 @@
 (use-package lsp-mode
   :straight t)
 
+
 (use-package lsp-ui
   :straight t
   :after (lsp-mode)
@@ -610,14 +611,17 @@
 		      web-mode-code-indent-offset 2)))
   :config
   (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
-  (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
+  (add-to-list 'auto-mode-alist '("\\.tmpl\\'" . web-mode))
+  (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+  (setq web-mode-engines-alist '(("go" . "\\.tmpl\\'"))))
 
 (use-package prettier-js
   :straight t
   :hook
   ((js-mode   . prettier-js-mode)
    (json-mode . prettier-js-mode)
-   (web-mode  . prettier-js-mode)))
+   (web-mode  . prettier-js-mode)
+   (yaml-mode . prettier-js-mode)))
 
 ;;;;;; Make
 
@@ -640,6 +644,7 @@
   (py-use-font-lock-doc-face-p t)
   (py-auto-complete-p t)
   (py-tab-shifts-region-p t)
+  (py-python-command "python3")
   :hook ((python-mode . (lambda ()
 			  (python-black-on-save-mode)))))
 
