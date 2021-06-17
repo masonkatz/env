@@ -127,20 +127,25 @@
 
 (global-set-key (kbd "C-c d")  'mjk/dark-mode)
 
-(use-package doom-themes
+;; (use-package doom-themes
+;;   :straight t
+;;   :custom
+;;   (doom-zenburn-brighter-modeline t)
+;;   (doom-themes-enable-bold t)
+;;   (doom-themes-enable-italic t)
+;; ;  (doom-themes-treemacs-theme "doom-colors")
+;;   :config
+;;   (doom-themes-visual-bell-config)
+;; ;  (doom-themes-treemacs-config)
+;;   (doom-themes-org-config))
+
+(use-package vscode-dark-plus-theme
   :straight t
-  :custom
-  (doom-zenburn-brighter-modeline t)
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-italic t)
-;  (doom-themes-treemacs-theme "doom-colors")
   :config
-  (doom-themes-visual-bell-config)
-;  (doom-themes-treemacs-config)
-  (doom-themes-org-config))
+  (load-theme 'vscode-dark-plus t))
 
 
-(mjk/dark-mode) ;; do it
+;;(mjk/dark-mode) ;; do it
 
 ;;;; Printing
 
@@ -499,6 +504,8 @@
   (setq lsp-ui-sideline-delay 0.5
 	lsp-ui-doc-delay 0.5
 	lsp-ui-doc-enable t
+	lsp-ui-doc-header nil
+	lsp-ui-doc-use-webkit nil
 	lsp-ui-doc-include-signature nil
 	lsp-ui-doc-position 'top))
 
@@ -606,9 +613,9 @@
   (web-mode . (lambda ()
 		(when (equal web-mode-content-type "javascript")
 		  (web-mode-set-content-type "jsx")) ;; react
-		(setq web-mode-markup-indent-offset 2
-		      web-mode-css-indent-offset 2
-		      web-mode-code-indent-offset 2)))
+		(setq web-mode-css-indent-offset 2)))
+  :custom
+  (web-mode-enable-auto-indentation nil)
   :config
   (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tmpl\\'" . web-mode))
@@ -620,7 +627,7 @@
   :hook
   ((js-mode   . prettier-js-mode)
    (json-mode . prettier-js-mode)
-   (web-mode  . prettier-js-mode)
+;   (web-mode  . prettier-js-mode)
    (yaml-mode . prettier-js-mode)))
 
 ;;;;;; Make
