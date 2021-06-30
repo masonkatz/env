@@ -1,5 +1,4 @@
-
-;;; emacs.el --- top level config -*- eval: (outshine-cycle-buffer 2) -*-
+;; emacs.el --- top level config -*- eval: (outshine-cycle-buffer 2) -*-
 ;;; Commentary:
 ;;
 ;; Portable across MacOS and Linux, but assumes a fairly recent version of EMACS.
@@ -48,6 +47,24 @@
   (unbind-key "s-t")
   (unbind-key "s-,"))
 
+;;;; Dashboard
+
+(use-package dashboard
+  :straight t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-set-init-info nil
+	dashboard-set-footer nil
+	dashboard-banner-logo-title nil
+	dashboard-set-heading-icons t
+	dashboard-set-file-icons t
+	dashboard-set-navigator t
+	dashboard-items '((projects . 5)
+			  (recents  . 5)
+                          (bookmarks . 5)
+                          (registers . 5))))
+
+
 ;;;; Font, Icons & Ligatures
 
 (use-package all-the-icons
@@ -67,7 +84,7 @@
 					 ((3008 1692) . 16)
 					 ((3360 1890) . 16)
 					 ((3440 1440) . 16)
-					 ((3840 2160) . 16))
+					 ((3840 2160) . 20))
   "Font sizes for different monitors.")
 
 (defun mjk/font-size ()
@@ -78,6 +95,8 @@
 
 (when (display-graphic-p)
   (window-divider-mode)
+  (when (find-font (font-spec :name "JetBrains Mono"))
+    (set-face-attribute 'default nil :family "JetBrains Mono"))
   (set-face-attribute 'default nil :height (mjk/font-size)))
 
 ;;;; Modeline
@@ -96,10 +115,10 @@
 (defvar mjk/dark-mode-p nil
   "Are we dark or light.")
 
-(defvar mjk/dark-theme 'doom-zenburn
+(defvar mjk/dark-theme 'vscode-dark-plus
   "Dark mode theme.")
 
-(defvar mjk/light-theme 'doom-solarized-light
+(defvar mjk/light-theme 'solarized-light
   "Light mode theme - used for printing.")
 
 (defun mjk/dark-mode ()
@@ -127,25 +146,15 @@
 
 (global-set-key (kbd "C-c d")  'mjk/dark-mode)
 
-;; (use-package doom-themes
-;;   :straight t
-;;   :custom
-;;   (doom-zenburn-brighter-modeline t)
-;;   (doom-themes-enable-bold t)
-;;   (doom-themes-enable-italic t)
-;; ;  (doom-themes-treemacs-theme "doom-colors")
-;;   :config
-;;   (doom-themes-visual-bell-config)
-;; ;  (doom-themes-treemacs-config)
-;;   (doom-themes-org-config))
+(use-package solarized-theme
+  :straight t)
 
 (use-package vscode-dark-plus-theme
   :straight t
-  :config
-  (load-theme 'vscode-dark-plus t))
+  :custom
+  (vscode-dark-plus-box-org-todo nil))
 
-
-;;(mjk/dark-mode) ;; do it
+(mjk/dark-mode)
 
 ;;;; Printing
 
@@ -231,7 +240,8 @@
 	("<tab>" . 'helm-execute-persistent-action)
 	("C-z" . 'helm-select-action))
   :config
-  (helm-mode 1))
+  (helm-mode 1)
+  (helm-autoresize-mode t))
 
 (use-package helm-projectile
   :straight t
@@ -278,7 +288,16 @@
       (projectile-compile-project arg)
     (compile arg)))
 
+(defun mjk/grep (arg)
+  (interactive "P")
+  (if (projectile-project-root)
+      (projectile-grep arg)
+    (grep arg)))
+
 (global-set-key (kbd "C-c c")  'mjk/compile)
+(global-set-key (kbd "C-c g")  'mjk/grep)
+
+
 
 ;;;; Company
 
@@ -328,36 +347,7 @@
   
 ;;;; Fix Tab
 
-;; Combination of yas/company/term really messes stuff up, need to
-;; define custom tab command
-
-(defun check-expansion ()
-  (save-excursion
-    (if (looking-at "\\_>") t
-      (backward-char 1)
-      (if (looking-at "\\.") t
-        (backward-char 1)
-        (if (looking-at "->") t nil)))))
-
-(defun do-yas-expand ()
-  (let ((yas/fallback-behavior 'return-nil))
-    (yas/expand)))
-
-(defun mjk/tab ()
-  "Tab for all modes."
-  (interactive)
-  (if (string= major-mode "term-mode")
-      (term-send-raw-string "\t")
-    (if (minibufferp)
-	(minibuffer-complete)
-      (if (or (not yas/minor-mode)
-              (null (do-yas-expand)))
-          (if (and company-mode (check-expansion))
-              (company-complete-common)
-            (indent-for-tab-command))))))
-
 (setq tab-always-indent 'complete)
-;;(global-set-key [tab] 'mjk/tab)
 
 ;;;; System Administration
 ;;;;; Docker
@@ -441,34 +431,16 @@
           ("NOTE"       success bold)
           ("DEPRECATED" font-lock-doc-face bold))))
 
+(use-package mwim
+  :straight t
+  :config
+  (global-set-key (kbd "C-a") 'mwim-beginning)
+  (global-set-key (kbd "C-e") 'mwim-end))
+
+
+(global-set-key (kbd "C-c l")  'sort-lines)
 (global-set-key (kbd "C-c n")  'next-error)
 (global-set-key (kbd "C-c p")  'previous-error)
-
-(defun mjk/next-open-brace ()
-  (interactive)
-  (skip-chars-forward "^{")
-  (forward-char))
-
-(defun mjk/next-close-brace ()
-  (interactive)
-  (skip-chars-forward "^}")
-  (forward-char))
-
-(defun mjk/prev-open-brace ()
-  (interactive)
-  (skip-chars-backward "^{")
-  (backward-char))
-
-(defun mjk/prev-close-brace ()
-  (interactive)
-  (skip-chars-backward "^}")
-  (backward-char))
-
-(global-set-key (kbd "C-c [") 'mjk/next-open-brace)
-(global-set-key (kbd "C-c ]") 'mjk/next-close-brace)
-(global-set-key (kbd "C-c {") 'mjk/prev-open-brace)
-(global-set-key (kbd "C-c }") 'mjk/prev-close-brace)
-
 
 ;;;;; Git
 
@@ -530,6 +502,11 @@
 (use-package rainbow-mode
   :straight t)
 
+(use-package smartparens
+  :straight t
+  :config
+  (require 'smartparens-config))
+
 (add-hook 'prog-mode-hook
 	  '(lambda ()
 	     (when (display-graphic-p)
@@ -542,8 +519,8 @@
 	       (highlight-indent-guides-mode)
 	       (set (make-variable-buffer-local 'x-stretch-cursor) t))
 	     (prettify-symbols-mode)
-	     (show-paren-mode)
-	     (electric-pair-mode 1)
+	     (smartparens-mode)
+	     (show-smartparens-mode)
 	     (company-quickhelp-mode)
 	     (font-lock-mode)
 	     (flyspell-prog-mode)
@@ -589,7 +566,7 @@
       (setq indent-tabs-mode nil
 	    tabs-width 4)
     (setq indent-tabs-mode 't
-	  tab-width 8)))
+	  tab-width 4)))
 
 (use-package go-mode
   :straight t
@@ -597,7 +574,7 @@
   :hook ((go-mode . (lambda ()
 		      (mjk/go-setup)
 		      (setq gofmt-command "goimports"
-			    display-fill-column-indicator-column 120)
+			    display-fill-column-indicator-column 100)
 		      (lsp-deferred)
 		      (flycheck-add-next-checker 'lsp '(warning . go-golint))))
 	 (before-save . (lambda ()
@@ -733,7 +710,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(calendar-hebrew-all-holidays-flag t)
+ '(calendar-mark-holidays-flag t)
+ '(calendar-week-start-day 1)
+ '(compilation-always-kill t)
+ '(compilation-ask-about-save nil)
+ '(compilation-auto-jump-to-first-error t)
  '(compilation-scroll-output t)
+ '(compilation-window-height 12)
  '(display-time-load-average-threshold 10)
  '(display-time-mail-string "")
  '(global-auto-revert-mode t)
@@ -771,6 +755,3 @@
  '(font-lock-keyword-face ((t (:slant italic :weight normal))))
  '(linum ((t (:height 0.75))))
  '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline t :weight bold)))))
-
-
-
